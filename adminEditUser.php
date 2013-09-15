@@ -104,11 +104,36 @@ function GetSQLValueString($theValue, $theType, $theDefinedValue = "", $theNotDe
 }
 }
 
+$editFormAction = $_SERVER['PHP_SELF'];
+if (isset($_SERVER['QUERY_STRING'])) {
+  $editFormAction .= "?" . htmlentities($_SERVER['QUERY_STRING']);
+}
+
+if ((isset($_POST["MM_update"])) && ($_POST["MM_update"] == "ResetUser")) {
+  $updateSQL = sprintf("UPDATE usr_mgmnt SET password=%s WHERE status=%s",
+                       GetSQLValueString($_POST['password'], "text"),
+                       GetSQLValueString($_POST['statusInput'], "text"));
+
+  mysql_select_db($database_online_order, $online_order);
+  $Result1 = mysql_query($updateSQL, $online_order) or die(mysql_error());
+
+  $updateGoTo = "adminUserManage.php";
+  if (isset($_SERVER['QUERY_STRING'])) {
+    $updateGoTo .= (strpos($updateGoTo, '?')) ? "&" : "?";
+    $updateGoTo .= $_SERVER['QUERY_STRING'];
+  }
+  header(sprintf("Location: %s", $updateGoTo));
+}
+
+$colname_rsEditUser = "-1";
+if (isset($_GET['statusID'])) {
+  $colname_rsEditUser = $_GET['statusID'];
+}
 mysql_select_db($database_online_order, $online_order);
-$query_rsUsers = "SELECT username, password, status FROM usr_mgmnt";
-$rsUsers = mysql_query($query_rsUsers, $online_order) or die(mysql_error());
-$row_rsUsers = mysql_fetch_assoc($rsUsers);
-$totalRows_rsUsers = mysql_num_rows($rsUsers);
+$query_rsEditUser = sprintf("SELECT username, password, status FROM usr_mgmnt WHERE status = %s", GetSQLValueString($colname_rsEditUser, "text"));
+$rsEditUser = mysql_query($query_rsEditUser, $online_order) or die(mysql_error());
+$row_rsEditUser = mysql_fetch_assoc($rsEditUser);
+$totalRows_rsEditUser = mysql_num_rows($rsEditUser);
 ?>
 <!DOCTYPE html>
 <html>
@@ -124,59 +149,63 @@ $totalRows_rsUsers = mysql_num_rows($rsUsers);
       <script src="../../assets/js/respond.min.js"></script>
       <![endif]-->
     </head>
-    <body>
+<body>
       <div class="container-fluid">
         <div class="row-fluid">
           
 
-            <div class="well">
-              <h1>User Management</h1>
+          <div class="well">
+            <h1>User Management</h1>
 
-              <a href="adminAddUser.php">
-              <button class="btn btn-large" type="button">  Add User</button>
-              </a>
-      <a href="<?php echo $logoutAction ?>">
-      <button class="btn btn-large pull-right" type="button">  Sign Out</button>
-      </a> <br><br>
 
-              <table class="table table-striped table-bordered">
-              <tr>
-                <th>S.No.</th>
-                <th>Username</th>
-                <th>Password</th>
-                <th>Status</th>
-                <th></th>
-                <th></th>
-                <th></th>
-                <th></th>
-              </tr>
-              
-              <?php $i = 1; do { ?>
-  <tr>
-    <td><?php echo $i; ?></td>
-    <td><?php echo $row_rsUsers['username']; ?></td>
-    <td><?php echo $row_rsUsers['password']; ?></td>
-    <td><?php echo $row_rsUsers['status']; ?></td>
-    <td><button class="btn btn-success" type="button">Enable</button></td>
-    <td><button class="btn btn-inverse" type="button">Disable</button></td>
-    <td><a href="delete.php?statusID=<?php echo $row_rsUsers['status']; ?>">
-      <button class="btn btn-danger" type="button">Delete</button>
-    </a></td>
-    <td><a href="adminEditUser.php?statusID=<?php echo $row_rsUsers['status']; ?>">
-      <button class="btn btn-reset" type="button">Reset</button>
-    </a></td>
-  </tr>
-  <?php $i++;} while ($row_rsUsers = mysql_fetch_assoc($rsUsers)); ?>
-             
+            <a href="<?php echo $logoutAction ?>">
+            <button class="btn btn-large pull-right" type="button"><i class="icon-off"> </i> Sign Out</button>
+            </a> <br><br>
 
-              </table>
+            <form action="<?php echo $editFormAction; ?>" method="POST" class="form-horizontal" name="ResetUser">
+        <fieldset>
+
+          <!-- Form Name -->
+          <h1>
+            <legend>Edit  User</legend></h1>
+
+          <!-- Text input-->
+          <div class="control-group">
+            <label class="control-label">Username</label>
+            <div class="controls">
+              <input name="username" type="text"  required class="input-xlarge" id="username" placeholder="Enter Username" value="<?php echo $row_rsEditUser['username']; ?>">
+
+            </div>
+          </div>
+
+          <!-- Password input-->
+          <div class="control-group">
+            <label class="control-label">Password</label>
+            <div class="controls">
+              <input id="password" name="password" type="text" placeholder="Enter Password" class="input-xlarge" value="<?php echo $row_rsEditUser['password']; ?>" >
+
+            </div>
+          </div>
+
+          <!-- Button -->
+          <div class="control-group">
+            <label class="control-label"></label>
+            <div class="controls">
+              <input id="submit" name="submit" class="btn" valur="Add User" type="submit">
+            </div>
+          </div>
+<input name="statusInput" type="hidden" id="statusInput" value="<?php echo $row_rsEditUser['status']; ?>">
+        </fieldset>
+        <input type="hidden" name="MM_update" value="ResetUser">
+            </form>
            
+            
           </div>
         </div> 
       </div>
 
-    </body>
-    </html>
+</body>
+</html>
 <?php
-mysql_free_result($rsUsers);
+mysql_free_result($rsEditUser);
 ?>
