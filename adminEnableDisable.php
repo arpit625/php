@@ -1,5 +1,6 @@
 <?php require_once('Connections/online_order.php'); ?>
 <?php
+ob_start();
 if (!function_exists("GetSQLValueString")) {
 function GetSQLValueString($theValue, $theType, $theDefinedValue = "", $theNotDefinedValue = "") 
 {
@@ -51,9 +52,10 @@ $totalRows_rsUpdateEnable = mysql_num_rows($rsUpdateEnable);
 $updateSQL = "UPDATE usr_mgmnt SET user_status= '$varUserStatus' WHERE status='$colname_rsUpdateEnable'";
 
 $Result1 = mysql_query($updateSQL, $online_order) or die(mysql_error());
- 
-  header("Location: adminUserManage.php");
-
+ echo "sql successful";
+header("Location: adminUserManage.php");
+exit;
+echo "after";
 
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
