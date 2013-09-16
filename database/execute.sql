@@ -99,4 +99,7 @@ values (new.`username`,new.`status`,'new order');
 end$$
 DELIMITER ;
 
+alter table order_updt_status
+add (mainorder_id int(11));
+
  
