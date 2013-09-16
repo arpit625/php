@@ -51,7 +51,7 @@ if (isset($_POST['username'])) {
   $MM_redirecttoReferrer = true;
   mysql_select_db($database_online_order, $online_order);
   	
-  $LoginRS__query=sprintf("SELECT username, password, role FROM usr_mgmnt WHERE username=%s AND password=%s",
+  $LoginRS__query=sprintf("SELECT username, password, role FROM usr_mgmnt WHERE username=%s AND password=%s AND user_status='enable'",
   GetSQLValueString($loginUsername, "text"), GetSQLValueString($password, "text")); 
    
   $LoginRS = mysql_query($LoginRS__query, $online_order) or die(mysql_error());

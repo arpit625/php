@@ -1,3 +1,32 @@
+<?php require_once('Connections/online_order.php'); ?>
+<?php
+//initialize the session
+if (!isset($_SESSION)) {
+  session_start();
+}
+
+// ** Logout the current user. **
+$logoutAction = $_SERVER['PHP_SELF']."?doLogout=true";
+if ((isset($_SERVER['QUERY_STRING'])) && ($_SERVER['QUERY_STRING'] != "")){
+  $logoutAction .="&". htmlentities($_SERVER['QUERY_STRING']);
+}
+
+if ((isset($_GET['doLogout'])) &&($_GET['doLogout']=="true")){
+  //to fully log out a visitor we need to clear the session varialbles
+  $_SESSION['MM_Username'] = NULL;
+  $_SESSION['MM_UserGroup'] = NULL;
+  $_SESSION['PrevUrl'] = NULL;
+  unset($_SESSION['MM_Username']);
+  unset($_SESSION['MM_UserGroup']);
+  unset($_SESSION['PrevUrl']);
+	
+  $logoutGoTo = "index.php";
+  if ($logoutGoTo) {
+    header("Location: $logoutGoTo");
+    exit;
+  }
+}
+?>
 <?php
 if (!isset($_SESSION)) {
   session_start();
@@ -43,6 +72,63 @@ if (!((isset($_SESSION['MM_Username'])) && (isAuthorized("",$MM_authorizedUsers,
   exit;
 }
 ?>
+<?php
+if (!function_exists("GetSQLValueString")) {
+function GetSQLValueString($theValue, $theType, $theDefinedValue = "", $theNotDefinedValue = "") 
+{
+  if (PHP_VERSION < 6) {
+    $theValue = get_magic_quotes_gpc() ? stripslashes($theValue) : $theValue;
+  }
+
+  $theValue = function_exists("mysql_real_escape_string") ? mysql_real_escape_string($theValue) : mysql_escape_string($theValue);
+
+  switch ($theType) {
+    case "text":
+      $theValue = ($theValue != "") ? "'" . $theValue . "'" : "NULL";
+      break;    
+    case "long":
+    case "int":
+      $theValue = ($theValue != "") ? intval($theValue) : "NULL";
+      break;
+    case "double":
+      $theValue = ($theValue != "") ? doubleval($theValue) : "NULL";
+      break;
+    case "date":
+      $theValue = ($theValue != "") ? "'" . $theValue . "'" : "NULL";
+      break;
+    case "defined":
+      $theValue = ($theValue != "") ? $theDefinedValue : $theNotDefinedValue;
+      break;
+  }
+  return $theValue;
+}
+}
+
+$colname_rsUserInfo = "-1";
+if (isset($_GET['url_user_id'])) {
+  $colname_rsUserInfo = $_GET['url_user_id'];
+}
+
+$colname_rsOrderDetails = "-1";
+if (isset($_GET['url_mainorder_id'])) {
+  $colname_rsOrderDetails = $_GET['url_mainorder_id'];
+}
+mysql_select_db($database_online_order, $online_order);
+$query_rsUserInfo = sprintf("SELECT order_time, status_deliver, status_pickup, status_dineup, first_name, last_name, phone, add1, apt_no, city, zip, order_total, coupon_discount, tax, delivery_charge, order_status, payment_mode FROM orders WHERE user_id = %s AND mainorder_id = %s" , GetSQLValueString($colname_rsUserInfo, "int"),GetSQLValueString($colname_rsOrderDetails, "int"));
+$rsUserInfo = mysql_query($query_rsUserInfo, $online_order) or die(mysql_error());
+$row_rsUserInfo = mysql_fetch_assoc($rsUserInfo);
+$totalRows_rsUserInfo = mysql_num_rows($rsUserInfo);
+
+
+
+mysql_select_db($database_online_order, $online_order);
+$query_rsOrderDetails = sprintf("SELECT temp_order_id, extra_price, price, item_name, extra_items_name,selected_options_name FROM cart_order_items WHERE order_id = %s", GetSQLValueString($colname_rsOrderDetails, "int"));
+$rsOrderDetails = mysql_query($query_rsOrderDetails, $online_order) or die(mysql_error());
+$row_rsOrderDetails = mysql_fetch_assoc($rsOrderDetails);
+$totalRows_rsOrderDetails = mysql_num_rows($rsOrderDetails);
+
+echo $totalRows_rsUserInfo;
+?>
 <!DOCTYPE html>
 <html>
 <head>
@@ -72,8 +158,9 @@ if (!((isset($_SESSION['MM_Username'])) && (isAuthorized("",$MM_authorizedUsers,
                </h5>
              </div>
              <div class="span6 pull-right">
-              <a class="btn btn-large pull-right" type="button"><i class="icon-off"> </i> Sign Out</a>
-            </div>
+               <a href="<?php echo $logoutAction ?>">
+               <button class="btn btn-large pull-right" type="button"><i class="icon-off"> </i> Sign Out</button>
+              </a>             </div>
 
           </div>
 
@@ -89,43 +176,28 @@ if (!((isset($_SESSION['MM_Username'])) && (isAuthorized("",$MM_authorizedUsers,
               <th>Item Price</th>
               <th>Total</th>
             </tr>
-            <tr>
-              <td>1</td>
-              <td>Pizza</td>
-              <td>Toppings+Olive</td>
-              <td>Extra Cheese</td>
-              <td>10</td>
-              <td>20</td>
-              <td>30</td>
-            </tr>
+            <?php do { ?>
+  <tr>
+    <td>1</td>
+    <td>
+    <a href="pizzaInfo.php?url_temp_order_id=<?php echo $row_rsOrderDetails['temp_order_id']; ?>"><?php echo $row_rsOrderDetails['item_name']; ?></a>
+    </td>
+    <td><?php echo $row_rsOrderDetails['selected_options_name']; ?></td>
+    <td><?php echo $row_rsOrderDetails['extra_items_name']; ?></td>
+    <td><?php echo $row_rsOrderDetails['extra_price']; ?></td>
+    <td><?php echo $row_rsOrderDetails['price']; ?></td>
+    <td><?php echo $row_rsOrderDetails['price']+$row_rsOrderDetails['extra_price']; ?></td>
+  </tr>
+  <?php } while ($row_rsOrderDetails = mysql_fetch_assoc($rsOrderDetails)); ?>
 
-            <tr>
-              <td>2</td>
-              <td>Coke</td>
-              <td>Diet Coke</td>
-              <td>NA</td>
-              <td>0</td>
-              <td>20</td>
-              <td>20</td>
-            </tr>
-
-            <tr>
-              <td>3</td>
-              <td>Cheese Sticks</td>
-              <td>Italian Style</td>
-              <td>Extra Cheese</td>
-              <td>10</td>
-              <td>20</td>
-              <td>30</td>
-            </tr>
 
           </table>
 
           <h4>
-            Tax - $12.25 , 
-            Coupon Discount - $10 , 
-            Delivery Charges - $10 , 
-            Total - $250 
+            Tax - <?php echo $row_rsUserInfo['tax']; ?> , 
+            Coupon Discount - <?php echo $row_rsUserInfo['coupon_discount']; ?> , 
+            Delivery Charges - <?php echo $row_rsUserInfo['delivery_charge']; ?> , 
+            Total - <?php echo $row_rsUserInfo['order_total']; ?>
           </h4>
 
           <br>
@@ -134,19 +206,31 @@ if (!((isset($_SESSION['MM_Username'])) && (isAuthorized("",$MM_authorizedUsers,
             <div class="span4">
             <dl class="dl-horizontal">
               <dt>Name :</dt>
-              <dd>Jacob Singh</dd>
+              <dd><?php echo $row_rsUserInfo['first_name'] . " " . $row_rsUserInfo['last_name']; ?></dd>
 
               <dt>Street Address :</dt>
-              <dd>234 Park Avenue</dd>
-
-              <dt>Town :</dt>
-              <dd>Virginia</dd>
+              <dd>
+              <?php echo $row_rsUserInfo['apt_no']; ?> , <?php echo $row_rsUserInfo['add1']; ?>
+              <br>
+              <?php echo $row_rsUserInfo['city']; ?> - <?php echo $row_rsUserInfo['zip']; ?>
+              </dd>
 
               <dt>Delivery Type :</dt>
-              <dd>Pick Up</dd>
+              <dd>
+
+                    <?php 
+          if($row_rsUserInfo['status_deliver'] == "yes")
+          echo "Home Delivery";
+        if($row_rsUserInfo['status_pickup'] == "yes")
+          echo "Pick Up";
+        if($row_rsUserInfo['status_dineup'] == "yes")
+          echo "Dine Up";
+         ?>
+
+              </dd>
 
               <dt>Order Time :</dt>
-              <dd>03:50 pm</dd>                            
+              <dd><?php echo $row_rsUserInfo['order_time']; ?></dd>                            
 
             </dl>
             </div>
@@ -155,16 +239,10 @@ if (!((isset($_SESSION['MM_Username'])) && (isAuthorized("",$MM_authorizedUsers,
             <div class="span4">
             <dl class="dl-horizontal">
               <dt>Contact Number :</dt>
-              <dd>123-456-7890</dd>
-
-              <dt>Apt Number :</dt>
-              <dd>23</dd>
-
-              <dt>Street :</dt>
-              <dd>Winston Street</dd>
+              <dd><?php echo $row_rsUserInfo['phone']; ?></dd>
 
               <dt>Payment Type :</dt>
-              <dd>Online</dd>                           
+              <dd><?php echo $row_rsUserInfo['payment_mode']; ?></dd>                           
 
             </dl>
             </div>
@@ -206,3 +284,8 @@ if (!((isset($_SESSION['MM_Username'])) && (isAuthorized("",$MM_authorizedUsers,
 
   </body>
   </html>
+<?php
+mysql_free_result($rsUserInfo);
+
+mysql_free_result($rsOrderDetails);
+?>

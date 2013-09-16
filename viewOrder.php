@@ -1,3 +1,4 @@
+<?php require_once('Connections/online_order.php'); ?>
 <?php
 //initialize the session
 if (!isset($_SESSION)) {
@@ -71,6 +72,60 @@ if (!((isset($_SESSION['MM_Username'])) && (isAuthorized("",$MM_authorizedUsers,
   exit;
 }
 ?>
+<?php
+if (!function_exists("GetSQLValueString")) {
+function GetSQLValueString($theValue, $theType, $theDefinedValue = "", $theNotDefinedValue = "") 
+{
+  if (PHP_VERSION < 6) {
+    $theValue = get_magic_quotes_gpc() ? stripslashes($theValue) : $theValue;
+  }
+
+  $theValue = function_exists("mysql_real_escape_string") ? mysql_real_escape_string($theValue) : mysql_escape_string($theValue);
+
+  switch ($theType) {
+    case "text":
+      $theValue = ($theValue != "") ? "'" . $theValue . "'" : "NULL";
+      break;    
+    case "long":
+    case "int":
+      $theValue = ($theValue != "") ? intval($theValue) : "NULL";
+      break;
+    case "double":
+      $theValue = ($theValue != "") ? doubleval($theValue) : "NULL";
+      break;
+    case "date":
+      $theValue = ($theValue != "") ? "'" . $theValue . "'" : "NULL";
+      break;
+    case "defined":
+      $theValue = ($theValue != "") ? $theDefinedValue : $theNotDefinedValue;
+      break;
+  }
+  return $theValue;
+}
+}
+$colname_rsUserDetail = "-1";
+if (isset($_SESSION['MM_Username'])) {
+  $colname_rsUserDetail = $_SESSION['MM_Username'];
+}
+mysql_select_db($database_online_order, $online_order);
+$query_rsUserDetail = sprintf("SELECT username, status FROM usr_mgmnt WHERE username = %s", GetSQLValueString($colname_rsUserDetail, "text"));
+$rsUserDetail = mysql_query($query_rsUserDetail, $online_order) or die(mysql_error());
+$row_rsUserDetail = mysql_fetch_assoc($rsUserDetail);
+$totalRows_rsUserDetail = mysql_num_rows($rsUserDetail);
+
+$user_status_id = $row_rsUserDetail['status'];
+$colname_rsViewOrder = "-1";
+
+  $colname_rsViewOrder = $user_status_id;
+
+mysql_select_db($database_online_order, $online_order);
+$query_rsViewOrder = sprintf("SELECT mainorder_id, order_date, order_time, status_deliver, status_pickup, status_dineup, phone, add1, apt_no, city, zip, user_id, order_total, delivery_charge, order_status, payment_mode FROM orders WHERE user_id = %s", $colname_rsViewOrder);
+$rsViewOrder = mysql_query($query_rsViewOrder, $online_order) or die(mysql_error());
+$row_rsViewOrder = mysql_fetch_assoc($rsViewOrder);
+$totalRows_rsViewOrder = mysql_num_rows($rsViewOrder);
+
+
+?>
 <!DOCTYPE html>
 <html>
 <head>
@@ -121,38 +176,31 @@ if (!((isset($_SESSION['MM_Username'])) && (isAuthorized("",$MM_authorizedUsers,
                 <th>Payment Type</th>
                 <th>Select</th>
               </tr>
-              <tr>
-                <td>abcd12</td>
-                <td>Sept 8,2013</td>
-                <td>Customer123</td>
-                <td>200</td>
-                <td>New</td>
-                <td>Home Delivery</td>
-                <td>Credit Card</td>
-                <td><a class="btn btn-reset" type="button">View Items</a></td>
-              </tr>
-
-              <tr>
-                <td>abcd12</td>
-                <td>Sept 8,2013</td>
-                <td>Customer123</td>
-                <td>200</td>
-                <td>New</td>
-                <td>Home Delivery</td>
-                <td>Credit Card</td>
-                <td><a class="btn btn-reset" type="button">View Items</a></td>
-              </tr>
-
-              <tr>
-                <td>abcd12</td>
-                <td>Sept 8,2013</td>
-                <td>Customer123</td>
-                <td>200</td>
-                <td>New</td>
-                <td>Home Delivery</td>
-                <td>Credit Card</td>
-                <td><a class="btn btn-reset" type="button">View Items</a></td>
-              </tr>
+              <?php do { ?>
+  <tr>
+    <td><?php echo $row_rsViewOrder['mainorder_id']; ?></td>
+    <td><?php echo $row_rsViewOrder['order_time']; ?></td>
+    <td><?php echo $row_rsViewOrder['apt_no']; ?>, <?php echo $row_rsViewOrder['add1']; ?>, <?php echo $row_rsViewOrder['city']; ?> - <?php echo $row_rsViewOrder['zip']; ?> , <?php echo $row_rsViewOrder['phone']; ?></td>
+    <td><?php echo $row_rsViewOrder['order_total']; ?></td>
+    <td><?php echo $row_rsViewOrder['order_status']; ?></td>
+    <td>
+      <?php 
+			   	if($row_rsViewOrder['status_deliver'] == "yes")
+					echo "Home Delivery";
+				if($row_rsViewOrder['status_pickup'] == "yes")
+					echo "Pick Up";
+				if($row_rsViewOrder['status_dineup'] == "yes")
+					echo "Dine Up";
+			   ?>
+    </td>
+    <td><?php echo $row_rsViewOrder['payment_mode']; ?></td>
+    <td>
+      <a href="orderDetails.php?url_mainorder_id=<?php echo $row_rsViewOrder['mainorder_id']; ?>&url_user_id=<?php echo $row_rsViewOrder['user_id']; ?>">
+        <button class="btn btn-reset" type="button">View Items</button>
+      </a>                </td>
+  </tr>
+  <?php } while ($row_rsViewOrder = mysql_fetch_assoc($rsViewOrder)); ?>
+              
 
               </table>
            
@@ -162,3 +210,8 @@ if (!((isset($_SESSION['MM_Username'])) && (isAuthorized("",$MM_authorizedUsers,
 
     </body>
     </html>
+<?php
+mysql_free_result($rsViewOrder);
+
+mysql_free_result($rsUserDetail);
+?>

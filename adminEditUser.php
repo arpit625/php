@@ -173,7 +173,7 @@ $totalRows_rsEditUser = mysql_num_rows($rsEditUser);
           <div class="control-group">
             <label class="control-label">Username</label>
             <div class="controls">
-              <input name="username" type="text"  required class="input-xlarge" id="username" placeholder="Enter Username" value="<?php echo $row_rsEditUser['username']; ?>">
+              <label><?php echo $row_rsEditUser['username']; ?></label>
 
             </div>
           </div>
