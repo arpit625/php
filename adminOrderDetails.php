@@ -127,6 +127,28 @@ $rsOrderDetails = mysql_query($query_rsOrderDetails, $online_order) or die(mysql
 $row_rsOrderDetails = mysql_fetch_assoc($rsOrderDetails);
 $totalRows_rsOrderDetails = mysql_num_rows($rsOrderDetails);
 
+
+
+
+// New , Pending , Complete Order Count Details
+$query_newOrder = sprintf("SELECT * FROM order_updt_status WHERE update_status = 1");
+$query_pendingOrder = sprintf("SELECT * FROM order_updt_status WHERE update_status = 2");
+$query_completeOrder = sprintf("SELECT * FROM order_updt_status WHERE update_status = 3");
+$count_newOrder = mysql_query($query_newOrder, $online_order) or die(mysql_error());
+$count_pendingOrder = mysql_query($query_pendingOrder, $online_order) or die(mysql_error());
+$count_completeOrder = mysql_query($query_completeOrder, $online_order) or die(mysql_error());
+$totalRows_newOrder = mysql_num_rows($count_newOrder);
+$totalRows_pendingOrder = mysql_num_rows($count_pendingOrder);
+$totalRows_completeOrder = mysql_num_rows($count_completeOrder);
+
+
+if (isset($_GET['orderStatus'])) {
+  $orderStatus = $_GET['orderStatus'];
+// $updateSQL = "UPDATE order_updt_status SET update_status= '$orderStatus' WHERE status = '$colname_rsUserInfo' AND mainorder_id = '$colname_rsOrderDetails'";
+$updateSQL = sprintf("UPDATE order_updt_status SET update_status= %s WHERE status = %s AND mainorder_id = %s",$orderStatus,$colname_rsUserInfo,$colname_rsOrderDetails);
+
+$Result1 = mysql_query($updateSQL, $online_order) or die(mysql_error());
+}
 ?>
 <!DOCTYPE html>
 <html>
@@ -150,7 +172,11 @@ $totalRows_rsOrderDetails = mysql_num_rows($rsOrderDetails);
             <br>
             <div class="row-fluid">
               <div class="span5 offset1">
-
+       <h5>
+         <span class="badge badge-info"><?php echo $totalRows_newOrder; ?></span> New / 
+         <span class="badge badge-warning"><?php echo $totalRows_pendingOrder; ?></span> Pending / 
+         <span class="badge badge-success"><?php echo $totalRows_completeOrder; ?></span> Complete 
+       </h5>
              </div>
              <div class="span6 pull-right">
                <a href="<?php echo $logoutAction ?>">
@@ -248,12 +274,12 @@ $totalRows_rsOrderDetails = mysql_num_rows($rsOrderDetails);
           <!-- customer details row ends here -->
 
 
-<form class="form-horizontal">
+<form class="form-horizontal" method="adminOrderDetails.php">
 <fieldset>
 
 
 <!-- Select Basic -->
-<div class="control-group">
+<div class="control-group" >
   <label class="control-label">Order Status</label>
   <div class="controls">
     <select id="orderStatus" name="orderStatus" class="input-xlarge">
@@ -261,10 +287,15 @@ $totalRows_rsOrderDetails = mysql_num_rows($rsOrderDetails);
       <option value="2">Pending</option>
       <option value="3">Complete</option>
     </select>
+<input type="hidden" name="url_mainorder_id" value="<?php echo $colname_rsOrderDetails; ?>">
+<input type="hidden" name="url_user_id" value="<?php echo $colname_rsUserInfo; ?>">
 
-<a href="updateOrderStatus.php?url_mainorder_id=<?php echo $colname_rsOrderDetails; ?>&url_user_id=<?php echo $colname_rsUserInfo; ?>&url_update_status=<?php echo $_POST['orderStatus']; ?>">
-    <button id="orderChange" name="orderChange" class="btn btn-success">Change</button>
-     </a> 
+
+
+
+
+    <input id="orderChange" name="orderChange" class="btn btn-success" type="submit" value="Change">
+
   </div>
 </div>
 

@@ -104,22 +104,23 @@ function GetSQLValueString($theValue, $theType, $theDefinedValue = "", $theNotDe
 }
 }
 
-$orderNo = isset($_POST['orderNo']);
-$startDate = isset($_POST['startDate']);
-$endDate = isset($_POST['endDate']);
+$orderNo = (isset($_POST['orderNo']) ? $_POST['orderNo']: null);
+$startDate = (isset($_POST['startDate']) ? $_POST['startDate']: null);
+$endDate = (isset($_POST['endDate']) ? $_POST['endDate']: null);
 
 mysql_select_db($database_online_order, $online_order);
-if($orderNo) 
+if(!empty($orderNo)&& isset($orderNo)) 
   $query_rsViewAll = sprintf("SELECT * FROM orders WHERE mainorder_id = %s", $_POST['orderNo']);
-else if($startDate && $endDate) 
+elseif(!empty($startDate) && !empty($endDate) && isset($startDate) && isset($endDate)) 
   $query_rsViewAll = sprintf("SELECT * FROM orders WHERE order_date between CAST('%s' AS DATE) and CAST('%s' AS DATE)", $_POST['startDate'], $_POST['endDate']);
 else 
   $query_rsViewAll = "SELECT * FROM orders";
 
+
 if (isset($_GET['url_daily_search'])) {
   $query_rsViewAll = "SELECT * FROM orders WHERE order_date = DATE(CURDATE())";
 }
-
+// echo $query_rsViewAll;
 
 $rsViewAll = mysql_query($query_rsViewAll, $online_order) or die(mysql_error());
 $row_rsViewAll = mysql_fetch_assoc($rsViewAll);
@@ -139,9 +140,6 @@ $totalRows_newOrder = mysql_num_rows($count_newOrder);
 $totalRows_pendingOrder = mysql_num_rows($count_pendingOrder);
 $totalRows_completeOrder = mysql_num_rows($count_completeOrder);
 
-if ($startDate && $endDate  ) {
-   echo $_POST['startDate'] . " " . $_POST['endDate'] ;
-}
 ?>
 <!DOCTYPE html>
 <html>
@@ -193,12 +191,12 @@ if ($startDate && $endDate  ) {
 </div>
 
 <div class="input-append">
-    <input type="text" class="input-medium" placeholder="Date Range From" name="startDate">
+    <input type="text" class="input-medium" placeholder="Date: 2013-09-10" name="startDate">
   <span class="add-on"><i class="icon-calendar"> </i> </span>
 </div>
 
 <div class="input-append">
-    <input type="text" class="input-medium" placeholder="Date Range To" name="endDate">
+    <input type="text" class="input-medium" placeholder="Date: 2013-09-11" name="endDate">
   <span class="add-on"><i class="icon-calendar"> </i> </span>
 </div>
 

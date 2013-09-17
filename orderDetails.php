@@ -127,6 +127,16 @@ $rsOrderDetails = mysql_query($query_rsOrderDetails, $online_order) or die(mysql
 $row_rsOrderDetails = mysql_fetch_assoc($rsOrderDetails);
 $totalRows_rsOrderDetails = mysql_num_rows($rsOrderDetails);
 
+
+if (isset($_GET['orderStatus'])) {
+  $orderStatus = $_GET['orderStatus'];
+// $updateSQL = "UPDATE order_updt_status SET update_status= '$orderStatus' WHERE status = '$colname_rsUserInfo' AND mainorder_id = '$colname_rsOrderDetails'";
+$updateSQL = sprintf("UPDATE order_updt_status SET update_status= %s WHERE status = %s AND mainorder_id = %s",$orderStatus,$colname_rsUserInfo,$colname_rsOrderDetails);
+
+$Result1 = mysql_query($updateSQL, $online_order) or die(mysql_error());
+
+}
+?>
 ?>
 <!DOCTYPE html>
 <html>
@@ -248,21 +258,28 @@ $totalRows_rsOrderDetails = mysql_num_rows($rsOrderDetails);
           <!-- customer details row ends here -->
 
 
-<form class="form-horizontal">
+<form class="form-horizontal" method="orderDetails.php">
 <fieldset>
 
 
 <!-- Select Basic -->
-<div class="control-group">
+<div class="control-group" >
   <label class="control-label">Order Status</label>
   <div class="controls">
-    <select id="orderStatur" name="orderStatur" class="input-xlarge">
-      <option>New</option>
-      <option>Pending</option>
-      <option>Complete</option>
+    <select id="orderStatus" name="orderStatus" class="input-xlarge">
+      <option value="1">New</option>
+      <option value="2">Pending</option>
+      <option value="3">Complete</option>
     </select>
+<input type="hidden" name="url_mainorder_id" value="<?php echo $colname_rsOrderDetails; ?>">
+<input type="hidden" name="url_user_id" value="<?php echo $colname_rsUserInfo; ?>">
 
-    <button id="orderChange" name="orderChange" class="btn btn-success">Change</button>
+
+
+
+
+    <input id="orderChange" name="orderChange" class="btn btn-success" type="submit" value="Change">
+
   </div>
 </div>
 
