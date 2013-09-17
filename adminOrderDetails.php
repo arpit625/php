@@ -127,7 +127,6 @@ $rsOrderDetails = mysql_query($query_rsOrderDetails, $online_order) or die(mysql
 $row_rsOrderDetails = mysql_fetch_assoc($rsOrderDetails);
 $totalRows_rsOrderDetails = mysql_num_rows($rsOrderDetails);
 
-echo $totalRows_rsUserInfo;
 ?>
 <!DOCTYPE html>
 <html>
@@ -151,11 +150,7 @@ echo $totalRows_rsUserInfo;
             <br>
             <div class="row-fluid">
               <div class="span5 offset1">
-               <h5>
-                 <span class="badge badge-info">21</span> New / 
-                 <span class="badge badge-warning">2</span> Pending / 
-                 <span class="badge badge-success">28</span> Complete 
-               </h5>
+
              </div>
              <div class="span6 pull-right">
                <a href="<?php echo $logoutAction ?>">
@@ -261,13 +256,15 @@ echo $totalRows_rsUserInfo;
 <div class="control-group">
   <label class="control-label">Order Status</label>
   <div class="controls">
-    <select id="orderStatur" name="orderStatur" class="input-xlarge">
-      <option>New</option>
-      <option>Pending</option>
-      <option>Complete</option>
+    <select id="orderStatus" name="orderStatus" class="input-xlarge">
+      <option value="1">New</option>
+      <option value="2">Pending</option>
+      <option value="3">Complete</option>
     </select>
 
-    <a id="orderChange" name="orderChange" class="btn btn-success">Change</a>
+<a href="updateOrderStatus.php?url_mainorder_id=<?php echo $colname_rsOrderDetails; ?>&url_user_id=<?php echo $colname_rsUserInfo; ?>&url_update_status=<?php echo $_POST['orderStatus']; ?>">
+    <button id="orderChange" name="orderChange" class="btn btn-success">Change</button>
+     </a> 
   </div>
 </div>
 

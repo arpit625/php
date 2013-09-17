@@ -104,28 +104,11 @@ function GetSQLValueString($theValue, $theType, $theDefinedValue = "", $theNotDe
 }
 }
 
-$orderNo = isset($_POST['orderNo']);
-$startDate = isset($_POST['startDate']);
-$endDate = isset($_POST['endDate']);
-
 mysql_select_db($database_online_order, $online_order);
-if($orderNo) 
-  $query_rsViewAll = sprintf("SELECT * FROM orders WHERE mainorder_id = %s", $_POST['orderNo']);
-else if($startDate && $endDate) 
-  $query_rsViewAll = sprintf("SELECT * FROM orders WHERE order_date between CAST('%s' AS DATE) and CAST('%s' AS DATE)", $_POST['startDate'], $_POST['endDate']);
-else 
-  $query_rsViewAll = "SELECT * FROM orders";
-
-if (isset($_GET['url_daily_search'])) {
-  $query_rsViewAll = "SELECT * FROM orders WHERE order_date = DATE(CURDATE())";
-}
-
-
+$query_rsViewAll = "SELECT * FROM orders";
 $rsViewAll = mysql_query($query_rsViewAll, $online_order) or die(mysql_error());
 $row_rsViewAll = mysql_fetch_assoc($rsViewAll);
 $totalRows_rsViewAll = mysql_num_rows($rsViewAll);
-
-
 
 
 // New , Pending , Complete Order Count Details
@@ -138,10 +121,6 @@ $count_completeOrder = mysql_query($query_completeOrder, $online_order) or die(m
 $totalRows_newOrder = mysql_num_rows($count_newOrder);
 $totalRows_pendingOrder = mysql_num_rows($count_pendingOrder);
 $totalRows_completeOrder = mysql_num_rows($count_completeOrder);
-
-if ($startDate && $endDate  ) {
-   echo $_POST['startDate'] . " " . $_POST['endDate'] ;
-}
 ?>
 <!DOCTYPE html>
 <html>
@@ -165,8 +144,8 @@ if ($startDate && $endDate  ) {
             <div class="well">
 
 <div class="row-fluid">
-<div class="span3"><a href="adminSearchOrder.php?url_daily_search=1" class="btn btn-large pull-right" type="button"><i class="icon-book"> </i> Daily Orders</a></div>
-<div class="span2"><a href="adminSearchOrder.php" class="btn btn-large pull-right" type="button"><i class="icon-align-justify"> </i> All Orders</a></div>
+<div class="span3"><a class="btn btn-large pull-right" type="button"><i class="icon-book"> </i> Daily Orders</a></div>
+<div class="span2"><a class="btn btn-large pull-right" type="button"><i class="icon-align-justify"> </i> All Orders</a></div>
       <div class="span5">
        <h5>
          <span class="badge badge-info"><?php echo $totalRows_newOrder; ?></span> New / 
@@ -184,21 +163,21 @@ if ($startDate && $endDate  ) {
 <br><br>
 
 <div class="row-fluid">
-  <form class="form-inline" method="POST" action="adminSearchOrder.php">
+  <form class="form-inline">
  
 
   <div class="input-append">
- <input type="text" class="input-medium" placeholder="Enter Order No." name="orderNo">
+ <input type="text" class="input-medium" placeholder="Enter Order No.">
   <span class="add-on"><i class=" icon-list-alt"> </i> </span>
 </div>
 
 <div class="input-append">
-    <input type="text" class="input-medium" placeholder="Date Range From" name="startDate">
+    <input type="text" class="input-medium" placeholder="Date Range From">
   <span class="add-on"><i class="icon-calendar"> </i> </span>
 </div>
 
 <div class="input-append">
-    <input type="text" class="input-medium" placeholder="Date Range To" name="endDate">
+    <input type="text" class="input-medium" placeholder="Date Range To">
   <span class="add-on"><i class="icon-calendar"> </i> </span>
 </div>
 
@@ -222,15 +201,7 @@ if ($startDate && $endDate  ) {
                 <th>Select</th>
               </tr>
 
-               <?php 
-if ($totalRows_rsViewAll == 0) {
- echo "<tr> <th>No Result Found</th></tr>";
-}
-else
-{
-
-
-               do { ?>
+               <?php do { ?>
               <tr>
                 <td><?php echo $row_rsViewAll['mainorder_id']; ?></td>
                 <td><?php echo $row_rsViewAll['order_time']; ?></td>
@@ -253,9 +224,7 @@ else
                   <button class="btn btn-reset" type="button">View Items</button>
                 </a>                </td>
               </tr>
-                <?php } while ($row_rsViewAll = mysql_fetch_assoc($rsViewAll)); 
-}
-                ?>
+                <?php } while ($row_rsViewAll = mysql_fetch_assoc($rsViewAll)); ?>
 
 
 

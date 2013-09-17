@@ -127,7 +127,6 @@ $rsOrderDetails = mysql_query($query_rsOrderDetails, $online_order) or die(mysql
 $row_rsOrderDetails = mysql_fetch_assoc($rsOrderDetails);
 $totalRows_rsOrderDetails = mysql_num_rows($rsOrderDetails);
 
-echo $totalRows_rsUserInfo;
 ?>
 <!DOCTYPE html>
 <html>
@@ -151,11 +150,7 @@ echo $totalRows_rsUserInfo;
             <br>
             <div class="row-fluid">
               <div class="span5 offset1">
-               <h5>
-                 <span class="badge badge-info">21</span> New / 
-                 <span class="badge badge-warning">2</span> Pending / 
-                 <span class="badge badge-success">28</span> Complete 
-               </h5>
+
              </div>
              <div class="span6 pull-right">
                <a href="<?php echo $logoutAction ?>">
@@ -267,7 +262,7 @@ echo $totalRows_rsUserInfo;
       <option>Complete</option>
     </select>
 
-    <a id="orderChange" name="orderChange" class="btn btn-success">Change</a>
+    <button id="orderChange" name="orderChange" class="btn btn-success">Change</button>
   </div>
 </div>
 

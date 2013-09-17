@@ -124,6 +124,18 @@ $rsViewOrder = mysql_query($query_rsViewOrder, $online_order) or die(mysql_error
 $row_rsViewOrder = mysql_fetch_assoc($rsViewOrder);
 $totalRows_rsViewOrder = mysql_num_rows($rsViewOrder);
 
+// New , Pending , Complete Order Count Details
+$query_newOrder = sprintf("SELECT * FROM order_updt_status WHERE status = %s AND update_status = 1", $colname_rsViewOrder);
+$query_pendingOrder = sprintf("SELECT * FROM order_updt_status WHERE username = %s AND update_status = 2", GetSQLValueString($colname_rsUserDetail, "text"));
+$query_completeOrder = sprintf("SELECT * FROM order_updt_status WHERE username = %s AND update_status = 3", GetSQLValueString($colname_rsUserDetail, "text"));
+$count_newOrder = mysql_query($query_newOrder, $online_order) or die(mysql_error());
+$count_pendingOrder = mysql_query($query_pendingOrder, $online_order) or die(mysql_error());
+$count_completeOrder = mysql_query($query_completeOrder, $online_order) or die(mysql_error());
+$totalRows_newOrder = mysql_num_rows($count_newOrder);
+$totalRows_pendingOrder = mysql_num_rows($count_pendingOrder);
+$totalRows_completeOrder = mysql_num_rows($count_completeOrder);
+
+
 
 ?>
 <!DOCTYPE html>
@@ -151,9 +163,9 @@ $totalRows_rsViewOrder = mysql_num_rows($rsViewOrder);
 <div class="row-fluid">
       <div class="span5 offset1">
        <h5>
-         <span class="badge badge-info">21</span> New / 
-         <span class="badge badge-warning">2</span> Pending / 
-         <span class="badge badge-success">28</span> Complete 
+         <span class="badge badge-info"><?php echo $totalRows_newOrder; ?></span> New / 
+         <span class="badge badge-warning"><?php echo $totalRows_pendingOrder; ?></span> Pending / 
+         <span class="badge badge-success"><?php echo $totalRows_completeOrder; ?></span> Complete 
        </h5>
       </div>
       <div class="span6 pull-right">
