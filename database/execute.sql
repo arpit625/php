@@ -102,4 +102,9 @@ DELIMITER ;
 alter table order_updt_status
 add (mainorder_id int(11));
 
+
+select mainorder_id, order_date, order_time, first_name, last_name,apt_no, add1, city, zip, phone,order_total, order_status, status_deliver, status_pickup,status_dineup,payment_mode,tax, coupon_discount, delivery_charge 
+from orders
+where order_date=DATE(CURDATE()) and userid = <userid_jisne_login_kiya_hai> and status = <user_statusID>
+
  
