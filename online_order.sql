@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: 127.0.0.1
--- Generation Time: Sep 16, 2013 at 07:37 PM
+-- Generation Time: Sep 17, 2013 at 04:17 PM
 -- Server version: 5.5.32
 -- PHP Version: 5.4.16
 
@@ -15,6 +15,7 @@ SET time_zone = "+00:00";
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
 /*!40101 SET NAMES utf8 */;
+
 
 -- --------------------------------------------------------
 
@@ -109,8 +110,8 @@ CREATE TABLE IF NOT EXISTS `orders` (
 
 INSERT INTO `orders` (`mainorder_id`, `ip_address`, `session_id`, `order_date`, `order_time`, `time_mode`, `status_deliver`, `status_pickup`, `status_dineup`, `first_name`, `last_name`, `email`, `phone`, `add1`, `apt_no`, `city`, `zip`, `userid`, `status`, `dlinedate`, `dlinetime`, `appar_avail`, `subtotal`, `combo_dis`, `guest_id`, `user_id`, `order_total`, `coupon_discount`, `tax`, `delivery_charge`, `order_status`, `payment_mode`) VALUES
 (1613984, '117.212.45.179', 'ab4e79fa2f1824ad31879431ed046de1', '2013-09-10', '2013-09-11 00:20:22', '', 'no', 'yes', 'no', 'apple ', 'jam', 'tanvi.geni@gmail.com', '1234-5678-789', '', 0, '', 0, 11, 'enable', '', '', '', '31.00', '0.00', 4, 3, '45.03', '20.00', '4.03', '10.00', 1, 'cod'),
-(1827364, '59.89.204.15', '6cd241a8fdd55ddc8c0f18d73448f0ba', '2013-09-10', '2013-09-11 00:20:00', '', 'no', 'yes', 'no', 'apple ', 'jam', 'tanvi.geni@gmail.com', '4567-5678-5678', '', 0, '', 0, 11, 'enable', '', '', '', '159.00', '0.00', 0, 3, '189.67', '20.00', '20.67', '10.00', 1, 'cod'),
-(2748359, '116.202.64.146', '32a197366e30ce13b09661d30ba5164c', '2013-09-10', '2013-09-11 00:19:36', '', 'no', 'yes', 'no', 'arti', 'arzoo', 'artiweb@projectpays.com', '123-454-555', '', 0, '', 0, 11, 'enable', '', '', '', '28.00', '0.00', 0, 2, '41.64', '20.00', '3.64', '10.00', 1, 'cod');
+(1827364, '59.89.204.15', '6cd241a8fdd55ddc8c0f18d73448f0ba', '2013-09-13', '2013-09-13 12:21:53', '', 'no', 'yes', 'no', 'apple ', 'jam', 'tanvi.geni@gmail.com', '4567-5678-5678', '', 0, '', 0, 11, 'enable', '', '', '', '159.00', '0.00', 0, 3, '189.67', '20.00', '20.67', '10.00', 1, 'cod'),
+(2748359, '116.202.64.146', '32a197366e30ce13b09661d30ba5164c', '2013-09-17', '2013-09-17 11:07:37', '', 'no', 'yes', 'no', 'arti', 'arzoo', 'artiweb@projectpays.com', '123-454-555', '', 0, '', 0, 11, 'enable', '', '', '', '28.00', '0.00', 0, 2, '41.64', '20.00', '3.64', '10.00', 1, 'cod');
 
 -- --------------------------------------------------------
 
@@ -121,7 +122,8 @@ INSERT INTO `orders` (`mainorder_id`, `ip_address`, `session_id`, `order_date`, 
 CREATE TABLE IF NOT EXISTS `order_updt_status` (
   `username` varchar(255) NOT NULL,
   `status` varchar(255) NOT NULL,
-  `update_status` varchar(40) NOT NULL,
+  `update_status` int(10) NOT NULL DEFAULT '1',
+  `mainorder_id` int(11) DEFAULT NULL,
   PRIMARY KEY (`username`,`status`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
@@ -129,15 +131,10 @@ CREATE TABLE IF NOT EXISTS `order_updt_status` (
 -- Dumping data for table `order_updt_status`
 --
 
-INSERT INTO `order_updt_status` (`username`, `status`, `update_status`) VALUES
-('admin', '1', 'new order'),
-('asdf', '3', 'new order'),
-('helo', '3', 'new order'),
-('hwllo', '3', 'new order'),
-('new', '3', 'new order'),
-('payam', '3', 'new order'),
-('root', '3', 'new order'),
-('user', '2', 'new order');
+INSERT INTO `order_updt_status` (`username`, `status`, `update_status`, `mainorder_id`) VALUES
+('admin', '1', 0, NULL),
+('root', '3', 2, 1827364),
+('user', '2', 3, 2748359);
 
 -- --------------------------------------------------------
 
@@ -149,32 +146,20 @@ CREATE TABLE IF NOT EXISTS `usr_mgmnt` (
   `username` varchar(255) NOT NULL,
   `password` varchar(255) NOT NULL,
   `user_status` varchar(10) DEFAULT 'disable',
-  `status` varchar(255) NOT NULL DEFAULT '3',
+  `status` int(10) NOT NULL AUTO_INCREMENT,
   `role` int(2) NOT NULL DEFAULT '0',
-  PRIMARY KEY (`username`,`status`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+  PRIMARY KEY (`username`,`status`),
+  UNIQUE KEY `status` (`status`)
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=4 ;
 
 --
 -- Dumping data for table `usr_mgmnt`
 --
 
 INSERT INTO `usr_mgmnt` (`username`, `password`, `user_status`, `status`, `role`) VALUES
-('admin', 'admin', 'enable', '1', 1),
-('root', '123', 'enable', '3', 0),
-('user', 'user', 'enable', '2', 0);
-
---
--- Triggers `usr_mgmnt`
---
-DROP TRIGGER IF EXISTS `usr_insert`;
-DELIMITER //
-CREATE TRIGGER `usr_insert` AFTER INSERT ON `usr_mgmnt`
- FOR EACH ROW begin
-insert into order_updt_status (`username`,`status`,`update_status`)
-values (new.`username`,new.`status`,'new order');
-end
-//
-DELIMITER ;
+('admin', 'admin', 'enable', 1, 1),
+('root', '123', 'enable', 3, 0),
+('user', 'user', 'enable', 2, 0);
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;

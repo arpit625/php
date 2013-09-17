@@ -131,6 +131,8 @@ $totalRows_rsUsers = mysql_num_rows($rsUsers);
 
             <div class="well">
               <h1>User Management</h1>
+  
+              <?php include('adminMenu.php'); ?>
 
               <a href="adminAddUser.php">
               <button class="btn btn-large" type="button">  Add User</button>
