@@ -161,7 +161,7 @@ $totalRows_completeOrder = mysql_num_rows($count_completeOrder);
           
 
             <div class="well">
-
+<?php include('adminMenu.php'); ?>
 <div class="row-fluid">
 <div class="span3"><a href="adminSearchOrder.php?url_daily_search=1" class="btn btn-large pull-right" type="button"><i class="icon-book"> </i> Daily Orders</a></div>
 <div class="span2"><a href="adminSearchOrder.php" class="btn btn-large pull-right" type="button"><i class="icon-align-justify"> </i> All Orders</a></div>

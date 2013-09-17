@@ -128,6 +128,8 @@ $row_rsOrderDetails = mysql_fetch_assoc($rsOrderDetails);
 $totalRows_rsOrderDetails = mysql_num_rows($rsOrderDetails);
 
 
+
+
 if (isset($_GET['orderStatus'])) {
   $orderStatus = $_GET['orderStatus'];
 // $updateSQL = "UPDATE order_updt_status SET update_status= '$orderStatus' WHERE status = '$colname_rsUserInfo' AND mainorder_id = '$colname_rsOrderDetails'";
@@ -136,8 +138,21 @@ $updateSQL = sprintf("UPDATE order_updt_status SET update_status= %s WHERE statu
 $Result1 = mysql_query($updateSQL, $online_order) or die(mysql_error());
 
 }
+
+
+// New , Pending , Complete Order Count Details
+$query_newOrder = sprintf("SELECT * FROM order_updt_status WHERE update_status = 1 AND status='$colname_rsUserInfo'");
+$query_pendingOrder = sprintf("SELECT * FROM order_updt_status WHERE update_status = 2 AND status='$colname_rsUserInfo'");
+$query_completeOrder = sprintf("SELECT * FROM order_updt_status WHERE update_status = 3 AND status='$colname_rsUserInfo'");
+$count_newOrder = mysql_query($query_newOrder, $online_order) or die(mysql_error());
+$count_pendingOrder = mysql_query($query_pendingOrder, $online_order) or die(mysql_error());
+$count_completeOrder = mysql_query($query_completeOrder, $online_order) or die(mysql_error());
+$totalRows_newOrder = mysql_num_rows($count_newOrder);
+$totalRows_pendingOrder = mysql_num_rows($count_pendingOrder);
+$totalRows_completeOrder = mysql_num_rows($count_completeOrder);
+
 ?>
-?>
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -158,9 +173,14 @@ $Result1 = mysql_query($updateSQL, $online_order) or die(mysql_error());
           <div class="well">
             <h1>Daily Orders</h1>
             <br>
+            <?php include('userMenu.php'); ?>
             <div class="row-fluid">
               <div class="span5 offset1">
-
+       <h5>
+         <span class="badge badge-info"><?php echo $totalRows_newOrder; ?></span> New / 
+         <span class="badge badge-warning"><?php echo $totalRows_pendingOrder; ?></span> Pending / 
+         <span class="badge badge-success"><?php echo $totalRows_completeOrder; ?></span> Complete 
+       </h5>
              </div>
              <div class="span6 pull-right">
                <a href="<?php echo $logoutAction ?>">

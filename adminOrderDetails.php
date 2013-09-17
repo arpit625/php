@@ -128,6 +128,12 @@ $row_rsOrderDetails = mysql_fetch_assoc($rsOrderDetails);
 $totalRows_rsOrderDetails = mysql_num_rows($rsOrderDetails);
 
 
+if (isset($_GET['orderStatus'])) {
+  $orderStatus = $_GET['orderStatus'];
+// $updateSQL = "UPDATE order_updt_status SET update_status= '$orderStatus' WHERE status = '$colname_rsUserInfo' AND mainorder_id = '$colname_rsOrderDetails'";
+$updateSQL = sprintf("UPDATE order_updt_status SET update_status= %s WHERE status = %s AND mainorder_id = %s",$orderStatus,$colname_rsUserInfo,$colname_rsOrderDetails);
+$Result1 = mysql_query($updateSQL, $online_order) or die(mysql_error());
+}
 
 
 // New , Pending , Complete Order Count Details
@@ -141,14 +147,6 @@ $totalRows_newOrder = mysql_num_rows($count_newOrder);
 $totalRows_pendingOrder = mysql_num_rows($count_pendingOrder);
 $totalRows_completeOrder = mysql_num_rows($count_completeOrder);
 
-
-if (isset($_GET['orderStatus'])) {
-  $orderStatus = $_GET['orderStatus'];
-// $updateSQL = "UPDATE order_updt_status SET update_status= '$orderStatus' WHERE status = '$colname_rsUserInfo' AND mainorder_id = '$colname_rsOrderDetails'";
-$updateSQL = sprintf("UPDATE order_updt_status SET update_status= %s WHERE status = %s AND mainorder_id = %s",$orderStatus,$colname_rsUserInfo,$colname_rsOrderDetails);
-
-$Result1 = mysql_query($updateSQL, $online_order) or die(mysql_error());
-}
 ?>
 <!DOCTYPE html>
 <html>
@@ -170,6 +168,7 @@ $Result1 = mysql_query($updateSQL, $online_order) or die(mysql_error());
           <div class="well">
             <h1>Daily Orders</h1>
             <br>
+            <?php include('adminMenu.php'); ?>
             <div class="row-fluid">
               <div class="span5 offset1">
        <h5>
@@ -289,10 +288,6 @@ $Result1 = mysql_query($updateSQL, $online_order) or die(mysql_error());
     </select>
 <input type="hidden" name="url_mainorder_id" value="<?php echo $colname_rsOrderDetails; ?>">
 <input type="hidden" name="url_user_id" value="<?php echo $colname_rsUserInfo; ?>">
-
-
-
-
 
     <input id="orderChange" name="orderChange" class="btn btn-success" type="submit" value="Change">
 
