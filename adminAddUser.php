@@ -146,7 +146,10 @@ if ((isset($_POST["MM_insert"])) && ($_POST["MM_insert"] == "newUser")) {
 
             <div class="well">
               <h1>User Management</h1>
-
+<a href="adminHome.php" class="btn btn-large" type="button"><i class="icon-home"> </i> Home </a>
+              <a href="adminUserManage.php">
+              <button class="btn btn-large" type="button"><i class="icon-backward"> </i> Back </button>
+              </a>
               <a href="<?php echo $logoutAction ?>">
               <button class="btn btn-large pull-right" type="button"><i class="icon-off"> </i> Sign Out</button>
               </a> <br><br>

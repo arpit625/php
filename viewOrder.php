@@ -119,7 +119,8 @@ $colname_rsViewOrder = "-1";
   $colname_rsViewOrder = $user_status_id;
 
 mysql_select_db($database_online_order, $online_order);
-$query_rsViewOrder = sprintf("SELECT mainorder_id, order_date, order_time, status_deliver, status_pickup, status_dineup, phone, add1, apt_no, city, zip, user_id, order_total, delivery_charge, order_status, payment_mode FROM orders WHERE user_id = %s", $colname_rsViewOrder);
+// $query_rsViewOrder = sprintf("SELECT mainorder_id, order_date, order_time, status_deliver, status_pickup, status_dineup, phone, add1, apt_no, city, zip, user_id, order_total, delivery_charge, order_status, payment_mode FROM orders WHERE user_id = %s", $colname_rsViewOrder);
+$query_rsViewOrder = sprintf("SELECT * FROM orders WHERE user_id = %s", $colname_rsViewOrder);
 $rsViewOrder = mysql_query($query_rsViewOrder, $online_order) or die(mysql_error());
 $row_rsViewOrder = mysql_fetch_assoc($rsViewOrder);
 $totalRows_rsViewOrder = mysql_num_rows($rsViewOrder);
@@ -186,13 +187,36 @@ $totalRows_completeOrder = mysql_num_rows($count_completeOrder);
                 <th>Order Status</th>
                 <th>Delivery Type</th>
                 <th>Payment Type</th>
-                <th>Select</th>
+
               </tr>
               <?php do { ?>
   <tr>
-    <td><?php echo $row_rsViewOrder['mainorder_id']; ?></td>
+      <td>
+      <a href="orderDetails.php?url_mainorder_id=<?php echo $row_rsViewOrder['mainorder_id']; ?>&url_user_id=<?php echo $row_rsViewOrder['user_id']; ?>">
+        <button class="btn btn-reset" type="button"><?php echo $row_rsViewOrder['mainorder_id']; ?></button>
+      </a> 
+    </td>
+
     <td><?php echo $row_rsViewOrder['order_time']; ?></td>
-    <td><?php echo $row_rsViewOrder['apt_no']; ?>, <?php echo $row_rsViewOrder['add1']; ?>, <?php echo $row_rsViewOrder['city']; ?> - <?php echo $row_rsViewOrder['zip']; ?> , <?php echo $row_rsViewOrder['phone']; ?></td>
+
+                    <!-- Customer Details -->
+                <td>
+                
+                <?php 
+                echo $row_rsViewOrder['first_name'] . " " . $row_rsViewOrder['last_name']; 
+                echo "<br>";
+                echo $row_rsViewOrder['add1'];
+                echo "<br>";
+                echo $row_rsViewOrder['apt_no'];
+                echo "<br>";
+                echo $row_rsViewOrder['city'];
+                echo "<br>";
+                echo $row_rsViewOrder['zip'];
+                echo "<br>";
+                echo $row_rsViewOrder['phone'];
+
+                ?>
+                </td>
     <td><?php echo $row_rsViewOrder['order_total']; ?></td>
     <td><?php echo $row_rsViewOrder['order_status']; ?></td>
     <td>
@@ -206,10 +230,7 @@ $totalRows_completeOrder = mysql_num_rows($count_completeOrder);
 			   ?>
     </td>
     <td><?php echo $row_rsViewOrder['payment_mode']; ?></td>
-    <td>
-      <a href="orderDetails.php?url_mainorder_id=<?php echo $row_rsViewOrder['mainorder_id']; ?>&url_user_id=<?php echo $row_rsViewOrder['user_id']; ?>">
-        <button class="btn btn-reset" type="button">View Items</button>
-      </a>                </td>
+
   </tr>
   <?php } while ($row_rsViewOrder = mysql_fetch_assoc($rsViewOrder)); ?>
               

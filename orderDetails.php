@@ -114,7 +114,8 @@ if (isset($_GET['url_mainorder_id'])) {
   $colname_rsOrderDetails = $_GET['url_mainorder_id'];
 }
 mysql_select_db($database_online_order, $online_order);
-$query_rsUserInfo = sprintf("SELECT order_time, status_deliver, status_pickup, status_dineup, first_name, last_name, phone, add1, apt_no, city, zip, order_total, coupon_discount, tax, delivery_charge, order_status, payment_mode FROM orders WHERE user_id = %s AND mainorder_id = %s" , GetSQLValueString($colname_rsUserInfo, "int"),GetSQLValueString($colname_rsOrderDetails, "int"));
+// $query_rsUserInfo = sprintf("SELECT order_time,mainorder_id, status_deliver, status_pickup, status_dineup, first_name, last_name, phone, add1, apt_no, city, zip, order_total, coupon_discount, tax, delivery_charge, order_status, payment_mode FROM orders WHERE user_id = %s AND mainorder_id = %s" , GetSQLValueString($colname_rsUserInfo, "int"),GetSQLValueString($colname_rsOrderDetails, "int"));
+$query_rsUserInfo = sprintf("SELECT * FROM orders WHERE user_id = %s AND mainorder_id = %s" , GetSQLValueString($colname_rsUserInfo, "int"),GetSQLValueString($colname_rsOrderDetails, "int"));
 $rsUserInfo = mysql_query($query_rsUserInfo, $online_order) or die(mysql_error());
 $row_rsUserInfo = mysql_fetch_assoc($rsUserInfo);
 $totalRows_rsUserInfo = mysql_num_rows($rsUserInfo);
@@ -122,12 +123,16 @@ $totalRows_rsUserInfo = mysql_num_rows($rsUserInfo);
 
 
 mysql_select_db($database_online_order, $online_order);
-$query_rsOrderDetails = sprintf("SELECT temp_order_id, extra_price, price, item_name, extra_items_name,selected_options_name FROM cart_order_items WHERE order_id = %s", GetSQLValueString($colname_rsOrderDetails, "int"));
+// $query_rsOrderDetails = sprintf("SELECT temp_order_id, extra_price, price, item_name, extra_items_name,selected_options_name FROM cart_order_items WHERE order_id = %s", GetSQLValueString($colname_rsOrderDetails, "int"));
+$query_rsOrderDetails = sprintf("SELECT * FROM cart_order_items WHERE order_id = %s", GetSQLValueString($colname_rsOrderDetails, "int"));
 $rsOrderDetails = mysql_query($query_rsOrderDetails, $online_order) or die(mysql_error());
 $row_rsOrderDetails = mysql_fetch_assoc($rsOrderDetails);
 $totalRows_rsOrderDetails = mysql_num_rows($rsOrderDetails);
 
-
+// Select Status
+// $query_update_status = sprintf("SELECT temp_order_id, extra_price, price, item_name, extra_items_name,selected_options_name FROM cart_order_items WHERE order_id = %s", GetSQLValueString($colname_rsOrderDetails, "int"));
+// $rsOrderDetails = mysql_query($query_update_status, $online_order) or die(mysql_error());
+// $row_rsOrderDetails = mysql_fetch_assoc($rsOrderDetails);
 
 
 if (isset($_GET['orderStatus'])) {
@@ -138,6 +143,13 @@ $updateSQL = sprintf("UPDATE order_updt_status SET update_status= %s WHERE statu
 $Result1 = mysql_query($updateSQL, $online_order) or die(mysql_error());
 
 }
+
+// Order Update Status ( new/ pending/complete )
+$query_rsOrderStatus = sprintf("SELECT * FROM order_updt_status WHERE status = %s AND mainorder_id = %s",$colname_rsUserInfo,$colname_rsOrderDetails);
+$rsOrderStatus = mysql_query($query_rsOrderStatus, $online_order) or die(mysql_error());
+$row_orderStatus = mysql_fetch_assoc($rsOrderStatus);
+// $totalRows_rsOrderStatus = mysql_num_rows($rsOrderStatus);
+$update_status = $row_orderStatus['update_status'];
 
 
 // New , Pending , Complete Order Count Details
@@ -171,25 +183,52 @@ $totalRows_completeOrder = mysql_num_rows($count_completeOrder);
       <div class="container-fluid">
         <div class="row-fluid">
           <div class="well">
-            <h1>Daily Orders</h1>
-            <br>
-            <?php include('userMenu.php'); ?>
+
+
             <div class="row-fluid">
-              <div class="span5 offset1">
-       <h5>
+              <a href="viewOrder.php" class="btn btn-large" type="button"><i class="icon-home"> </i> Home</a>
+       <a href="viewOrder.php" class="btn btn-large" type="button"><i class="icon-backward"> </i> Back</a>
+       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
          <span class="badge badge-info"><?php echo $totalRows_newOrder; ?></span> New / 
          <span class="badge badge-warning"><?php echo $totalRows_pendingOrder; ?></span> Pending / 
          <span class="badge badge-success"><?php echo $totalRows_completeOrder; ?></span> Complete 
-       </h5>
-             </div>
-             <div class="span6 pull-right">
-               <a href="<?php echo $logoutAction ?>">
+        <a href="<?php echo $logoutAction ?>">
                <button class="btn btn-large pull-right" type="button"><i class="icon-off"> </i> Sign Out</button>
-              </a>             </div>
+              </a> 
+             </div>
 
+
+
+          <br>
+
+                    <div class="row-fluid">
+            <div class="span4">
+             <strong> Order No. : </strong>
+              <?php echo $row_rsUserInfo['mainorder_id']; ?> 
+              <br>
+             <strong> Order Time :</strong>
+               <?php echo $row_rsUserInfo['order_time']; ?>
+            </div>
+
+            <div class="span4">
+             <strong> Delivery Type :</strong>
+
+                                    <?php 
+          if($row_rsUserInfo['status_deliver'] == "yes")
+          echo "Home Delivery";
+        if($row_rsUserInfo['status_pickup'] == "yes")
+          echo "Pick Up";
+        if($row_rsUserInfo['status_dineup'] == "yes")
+          echo "Dine Up";
+         ?>
+             
+              <br>
+             <strong> Payment Mode :</strong>
+               <?php echo $row_rsUserInfo['payment_mode']; ?>
+            </div>
           </div>
 
-          <br><br>
+          <br>
 
           <table class="table table-striped table-bordered">
             <tr>
@@ -218,93 +257,84 @@ $totalRows_completeOrder = mysql_num_rows($count_completeOrder);
 
           </table>
 
-          <h4>
-            Tax - <?php echo $row_rsUserInfo['tax']; ?> , 
-            Coupon Discount - <?php echo $row_rsUserInfo['coupon_discount']; ?> , 
-            Delivery Charges - <?php echo $row_rsUserInfo['delivery_charge']; ?> , 
-            Total - <?php echo $row_rsUserInfo['order_total']; ?>
-          </h4>
-
+<div class="row-fluid">
+<div class="span8"
           <br>
           <h2>Customer Details</h2>
           <div class="row-fluid">
-            <div class="span4">
+            <div class="span6">
             <dl class="dl-horizontal">
               <dt>Name :</dt>
               <dd><?php echo $row_rsUserInfo['first_name'] . " " . $row_rsUserInfo['last_name']; ?></dd>
 
               <dt>Street Address :</dt>
-              <dd>
-              <?php echo $row_rsUserInfo['apt_no']; ?> , <?php echo $row_rsUserInfo['add1']; ?>
-              <br>
-              <?php echo $row_rsUserInfo['city']; ?> - <?php echo $row_rsUserInfo['zip']; ?>
-              </dd>
+              <dd><?php echo $row_rsUserInfo['add1']; ?></dd>
 
-              <dt>Delivery Type :</dt>
-              <dd>
+              <dt>Apt No. :</dt>
+              <dd><?php echo $row_rsUserInfo['apt_no']; ?></dd>
 
-                    <?php 
-          if($row_rsUserInfo['status_deliver'] == "yes")
-          echo "Home Delivery";
-        if($row_rsUserInfo['status_pickup'] == "yes")
-          echo "Pick Up";
-        if($row_rsUserInfo['status_dineup'] == "yes")
-          echo "Dine Up";
-         ?>
+              <dt>City :</dt>
+              <dd><?php echo $row_rsUserInfo['city']; ?></dd>
 
-              </dd>
+              <dt>Zip :</dt>
+              <dd><?php echo $row_rsUserInfo['zip']; ?></dd>
 
-              <dt>Order Time :</dt>
-              <dd><?php echo $row_rsUserInfo['order_time']; ?></dd>                            
-
-            </dl>
-            </div>
-
-
-            <div class="span4">
-            <dl class="dl-horizontal">
               <dt>Contact Number :</dt>
               <dd><?php echo $row_rsUserInfo['phone']; ?></dd>
-
-              <dt>Payment Type :</dt>
-              <dd><?php echo $row_rsUserInfo['payment_mode']; ?></dd>                           
 
             </dl>
             </div>
             <!-- column 2  ends here -->
-
-
           </div>
           <!-- customer details row ends here -->
 
 
-<form class="form-horizontal" method="orderDetails.php">
+<form class="form-inline" method="adminOrderDetails.php">
 <fieldset>
-
-
-<!-- Select Basic -->
-<div class="control-group" >
-  <label class="control-label">Order Status</label>
-  <div class="controls">
+  <label class="control-label"><strong>Order Status : </strong></label>
     <select id="orderStatus" name="orderStatus" class="input-xlarge">
-      <option value="1">New</option>
-      <option value="2">Pending</option>
-      <option value="3">Complete</option>
+      <option value="1" <?php if($update_status == 1) echo "selected"; ?>>New</option>
+      <option value="2" <?php if($update_status == 2) echo "selected"; ?>>Pending</option>
+      <option value="3" <?php if($update_status == 3) echo "selected"; ?>>Complete</option>
     </select>
 <input type="hidden" name="url_mainorder_id" value="<?php echo $colname_rsOrderDetails; ?>">
 <input type="hidden" name="url_user_id" value="<?php echo $colname_rsUserInfo; ?>">
-
-
-
-
-
-    <input id="orderChange" name="orderChange" class="btn btn-success" type="submit" value="Change">
-
-  </div>
-</div>
+<input id="orderChange" name="orderChange" class="btn btn-success" type="submit" value="Change">
 
 </fieldset>
 </form>
+</div>
+
+<div class="span3 pull-right">
+  <table class="table table-bordered table-striped table-hover">
+  <tr>
+    <td>Sub Total</td>
+    <td><?php echo $row_rsUserInfo['subtotal']; ?></td>
+  </tr>
+  <tr>
+    <td>Tax</td>
+    <td><?php echo $row_rsUserInfo['tax']; ?></td>
+  </tr>
+  <tr>
+    <td>Coupoun Discount</td>
+    <td><?php echo $row_rsUserInfo['coupon_discount']; ?></td>
+  </tr>
+  <tr>
+    <td>Combo Discount</td>
+    <td><?php echo $row_rsUserInfo['combo_dis']; ?></td>
+  </tr>
+  <tr>
+    <td>Delivery Charges</td>
+    <td><?php echo $row_rsUserInfo['delivery_charge']; ?></td>
+  </tr>
+  <tr>
+    <td><strong>Total</strong></td>
+    <td><strong><?php echo $row_rsUserInfo['order_total']; ?></strong></td>
+  </tr>
+
+  </table>
+</div>
+</div>
 
 
         </div>

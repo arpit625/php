@@ -161,25 +161,31 @@ $totalRows_completeOrder = mysql_num_rows($count_completeOrder);
           
 
             <div class="well">
-<?php include('adminMenu.php'); ?>
+
 <div class="row-fluid">
-<div class="span3"><a href="adminSearchOrder.php?url_daily_search=1" class="btn btn-large pull-right" type="button"><i class="icon-book"> </i> Daily Orders</a></div>
-<div class="span2"><a href="adminSearchOrder.php" class="btn btn-large pull-right" type="button"><i class="icon-align-justify"> </i> All Orders</a></div>
-      <div class="span5">
-       <h5>
+<a href="adminHome.php" class="btn btn-large" type="button"><i class="icon-home"> </i> Home</a>
+<a href="adminSearchOrder.php?url_all_orders=1" class="btn btn-large " type="button"><i class="icon-align-justify"> </i> All Orders</a>
+<a href="adminSearchOrder.php?url_daily_search=1" class="btn btn-large" type="button"><i class="icon-book"> </i> Daily Orders</a>
+<a href="adminHome.php" class="btn btn-large" type="button"><i class="icon-backward"> </i> Back</a>
+
+      
          <span class="badge badge-info"><?php echo $totalRows_newOrder; ?></span> New / 
          <span class="badge badge-warning"><?php echo $totalRows_pendingOrder; ?></span> Pending / 
          <span class="badge badge-success"><?php echo $totalRows_completeOrder; ?></span> Complete 
-       </h5>
-      </div>
-      <div class="span2 ">
+     
+
+
         <a href="<?php echo $logoutAction ?>">
         <button class="btn btn-large pull-right" type="button"><i class="icon-off"> </i> Sign Out</button>
-        </a>      </div>
+        </a>    
 
 </div>
 
 <br><br>
+
+<?php 
+    if (isset($_GET['url_all_orders'])) {
+?>
 
 <div class="row-fluid">
   <form class="form-inline" method="POST" action="adminSearchOrder.php">
@@ -205,6 +211,7 @@ $totalRows_completeOrder = mysql_num_rows($count_completeOrder);
 </form>
 
 </div>
+<?php      } ?>
 
             <br>
 
@@ -217,7 +224,7 @@ $totalRows_completeOrder = mysql_num_rows($count_completeOrder);
                 <th>Order Status</th>
                 <th>Delivery Type</th>
                 <th>Payment Type</th>
-                <th>Select</th>
+                <!-- <th>Select</th> -->
               </tr>
 
                <?php 
@@ -230,9 +237,37 @@ else
 
                do { ?>
               <tr>
-                <td><?php echo $row_rsViewAll['mainorder_id']; ?></td>
-                <td><?php echo $row_rsViewAll['order_time']; ?></td>
-                <td><?php echo $row_rsViewAll['apt_no']; ?>, <?php echo $row_rsViewAll['add1']; ?>, <?php echo $row_rsViewAll['city']; ?> - <?php echo $row_rsViewAll['zip']; ?> , <?php echo $row_rsViewAll['phone']; ?></td>
+
+                              <td>
+                  <a href="adminOrderDetails.php?url_mainorder_id=<?php echo $row_rsViewAll['mainorder_id']; ?>&url_user_id=<?php echo $row_rsViewAll['user_id']; ?>">
+                  <button class="btn btn-reset" type="button"><?php echo $row_rsViewAll['mainorder_id']; ?></button>
+                </a>                </td>
+                <!-- <td></td> -->
+                <td>
+                <?php echo $row_rsViewAll['order_date'] . "<br>"; ?>
+               <strong> <?php echo substr($row_rsViewAll['order_time'],11,5); ?></strong>
+                </td>
+                  
+                <!-- Customer Details -->
+                <td>
+                
+                <?php 
+                echo $row_rsViewAll['first_name'] . " " . $row_rsViewAll['last_name']; 
+                echo "<br>";
+                echo $row_rsViewAll['add1'];
+                echo "<br>";
+                echo $row_rsViewAll['apt_no'];
+                echo "<br>";
+                echo $row_rsViewAll['city'];
+                echo "<br>";
+                echo $row_rsViewAll['zip'];
+                echo "<br>";
+                echo $row_rsViewAll['phone'];
+
+                ?>
+                </td>
+                               
+
                 <td><?php echo $row_rsViewAll['order_total']; ?></td>
                 <td><?php echo $row_rsViewAll['order_status']; ?></td>
                 <td>
@@ -246,10 +281,7 @@ else
 			   ?>
     </td>
                 <td><?php echo $row_rsViewAll['payment_mode']; ?></td>
-                <td>
-                  <a href="adminOrderDetails.php?url_mainorder_id=<?php echo $row_rsViewAll['mainorder_id']; ?>&url_user_id=<?php echo $row_rsViewAll['user_id']; ?>">
-                  <button class="btn btn-reset" type="button">View Items</button>
-                </a>                </td>
+
               </tr>
                 <?php } while ($row_rsViewAll = mysql_fetch_assoc($rsViewAll)); 
 }
