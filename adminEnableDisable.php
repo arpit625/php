@@ -52,10 +52,9 @@ $totalRows_rsUpdateEnable = mysql_num_rows($rsUpdateEnable);
 $updateSQL = "UPDATE usr_mgmnt SET user_status= '$varUserStatus' WHERE status='$colname_rsUpdateEnable'";
 
 $Result1 = mysql_query($updateSQL, $online_order) or die(mysql_error());
- echo "sql successful";
-header("Location: adminUserManage.php");
-exit;
-echo "after";
+ 
+  header("Location: adminUserManage.php");
+
 
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
