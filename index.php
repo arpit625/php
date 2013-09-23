@@ -63,7 +63,8 @@ if (isset($_POST['username'])) {
 	if (PHP_VERSION >= 5.1) {session_regenerate_id(true);} else {session_regenerate_id();}
     //declare two session variables and assign them
     $_SESSION['MM_Username'] = $loginUsername;
-    $_SESSION['MM_UserGroup'] = $loginStrGroup;	      
+    $_SESSION['MM_UserGroup'] = $loginStrGroup;	
+    //$_SESSION['MM_NewOrder'] = 0;         // For New Order
 
     if (isset($_SESSION['PrevUrl']) && true) {
       $MM_redirectLoginSuccess = $_SESSION['PrevUrl'];	

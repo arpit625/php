@@ -134,9 +134,11 @@ $totalRows_rsUsers = mysql_num_rows($rsUsers);
   
 
 <a href="adminHome.php" class="btn btn-large" type="button"><i class="icon-home"> </i> Home</a>
+<a href="adminHome.php" class="btn btn-large" type="button"><i class="icon-backward"> </i> Back</a>
               <a href="adminAddUser.php">
               <button class="btn btn-large" type="button"><i class="icon-user"> </i>  Add User</button>
               </a>
+
       <a href="<?php echo $logoutAction ?>">
       <button class="btn btn-large pull-right" type="button"><i class="icon-off"> </i>  Sign Out</button>
       </a> <br><br>

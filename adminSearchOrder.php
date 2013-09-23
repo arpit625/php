@@ -140,6 +140,17 @@ $totalRows_newOrder = mysql_num_rows($count_newOrder);
 $totalRows_pendingOrder = mysql_num_rows($count_pendingOrder);
 $totalRows_completeOrder = mysql_num_rows($count_completeOrder);
 
+$query_lastTime = "SELECT * FROM usr_mgmnt WHERE username='admin'";
+$lastTime = mysql_query($query_lastTime, $online_order) or die(mysql_error());
+$row_lastTime = mysql_fetch_assoc($lastTime);
+$totalRows_lastTime = mysql_num_rows($lastTime);
+$timeToCompare = strtotime($row_lastTime['last_time']);
+
+// Update Timestamp
+$query_UpdateLastTime = "update  usr_mgmnt set last_time=now() WHERE username='admin'";
+$UpdateLastTime = mysql_query($query_UpdateLastTime, $online_order) or die(mysql_error());
+
+$play = false;
 ?>
 <!DOCTYPE html>
 <html>
@@ -148,6 +159,8 @@ $totalRows_completeOrder = mysql_num_rows($count_completeOrder);
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <!-- Bootstrap -->
   <link href="css/bootstrap.min.css" rel="stylesheet" media="screen">
+  <script src="http://code.jquery.com/jquery-latest.js"></script>
+    <script src="js/bootstrap.min.js"></script>
 
   <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!--[if lt IE 9]>
@@ -173,7 +186,6 @@ $totalRows_completeOrder = mysql_num_rows($count_completeOrder);
          <span class="badge badge-warning"><?php echo $totalRows_pendingOrder; ?></span> Pending / 
          <span class="badge badge-success"><?php echo $totalRows_completeOrder; ?></span> Complete 
      
-
 
         <a href="<?php echo $logoutAction ?>">
         <button class="btn btn-large pull-right" type="button"><i class="icon-off"> </i> Sign Out</button>
@@ -216,7 +228,7 @@ $totalRows_completeOrder = mysql_num_rows($count_completeOrder);
             <br>
 
               <table class="table table-striped table-bordered">
-              <tr>
+              <tr >
                 <th>Order No.</th>
                 <th>Date/Time</th>
                 <th>Customer Detail</th>
@@ -237,12 +249,28 @@ else
 
                do { ?>
               <tr>
+              <?php
+              $new = false;
+                if (strtotime($row_rsViewAll['order_time']) > $timeToCompare) {
+                  $new = true;
+                  $play = true;
+                }
 
-                              <td>
+                ?>
+
+               <td>
                   <a href="adminOrderDetails.php?url_mainorder_id=<?php echo $row_rsViewAll['mainorder_id']; ?>&url_user_id=<?php echo $row_rsViewAll['user_id']; ?>">
                   <button class="btn btn-reset" type="button"><?php echo $row_rsViewAll['mainorder_id']; ?></button>
-                </a>                </td>
-                <!-- <td></td> -->
+                </a>   
+
+                <br><br>
+                <?php
+                 if($new){
+                  echo "<button class=\"btn btn-success\" type=\"button\">New Order</button>"; 
+                }
+                ?>          
+               </td>
+                
                 <td>
                 <?php echo $row_rsViewAll['order_date'] . "<br>"; ?>
                <strong> <?php echo substr($row_rsViewAll['order_time'],11,5); ?></strong>
@@ -290,11 +318,39 @@ else
 
 
               </table>
-           
+              <?php if($play) { ?>
+           <audio autoplay>
+  <source src="notification.mp3" type="audio/mpeg">
+</audio>
+<?php } ?>
+              <?php if($play) { ?>
+           <audio autoplay>
+  <source src="notification.mp3" type="audio/mpeg">
+</audio>
+<?php } ?>
+
+<!-- <button type="button" data-toggle="modal" data-target="#myModal">Launch modal</button> -->
+<div class="modal hide fade" id="myModal" data-target="#foo">
+  <div class="modal-header" >
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+    <h3>Notification</h3>
+  </div>
+  <div class="modal-body">
+    <p>You have New Orders.</p>
+  </div>
+  <div class="modal-footer">
+    <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+  </div>
+</div>
+
           </div>
         </div> 
       </div>
-
+<script>
+ <?php if($play) { 
+echo "$('#myModal').modal('show')";
+ } ?>
+</script>
     </body>
     </html>
 <?php
