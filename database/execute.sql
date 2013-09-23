@@ -107,4 +107,10 @@ select mainorder_id, order_date, order_time, first_name, last_name,apt_no, add1,
 from orders
 where order_date=DATE(CURDATE()) and userid = <userid_jisne_login_kiya_hai> and status = <user_statusID>
 
+alter table usr_mgmnt
+add( last_time timestamp,
+user_id varchar(255));
+
+
+
  
