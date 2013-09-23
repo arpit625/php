@@ -110,11 +110,11 @@ $endDate = (isset($_POST['endDate']) ? $_POST['endDate']: null);
 
 mysql_select_db($database_online_order, $online_order);
 if(!empty($orderNo)&& isset($orderNo)) 
-  $query_rsViewAll = sprintf("SELECT * FROM orders WHERE mainorder_id = %s", $_POST['orderNo']);
+  $query_rsViewAll = sprintf("SELECT * FROM orders WHERE mainorder_id = %s ORDER BY order_time DESC", $_POST['orderNo']);
 elseif(!empty($startDate) && !empty($endDate) && isset($startDate) && isset($endDate)) 
-  $query_rsViewAll = sprintf("SELECT * FROM orders WHERE order_date between CAST('%s' AS DATE) and CAST('%s' AS DATE)", $_POST['startDate'], $_POST['endDate']);
+  $query_rsViewAll = sprintf("SELECT * FROM orders WHERE order_date between CAST('%s' AS DATE) and CAST('%s' AS DATE) ORDER BY order_time DESC", $_POST['startDate'], $_POST['endDate']);
 else 
-  $query_rsViewAll = "SELECT * FROM orders";
+  $query_rsViewAll = "SELECT * FROM orders ORDER BY order_time DESC";
 
 
 if (isset($_GET['url_daily_search'])) {
@@ -157,6 +157,7 @@ $play = false;
 <head>
   <title>Online Order Updates</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="refresh" content="180" />
   <!-- Bootstrap -->
   <link href="css/bootstrap.min.css" rel="stylesheet" media="screen">
   <script src="http://code.jquery.com/jquery-latest.js"></script>
@@ -248,15 +249,18 @@ else
 
 
                do { ?>
-              <tr>
-              <?php
+
+               <?php
               $new = false;
                 if (strtotime($row_rsViewAll['order_time']) > $timeToCompare) {
                   $new = true;
                   $play = true;
                 }
-
                 ?>
+              <tr <?php if($new) echo "class=\"alert alert-success\"" ?> >
+
+
+                
 
                <td>
                   <a href="adminOrderDetails.php?url_mainorder_id=<?php echo $row_rsViewAll['mainorder_id']; ?>&url_user_id=<?php echo $row_rsViewAll['user_id']; ?>">

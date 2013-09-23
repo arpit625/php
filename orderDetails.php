@@ -163,6 +163,12 @@ $totalRows_newOrder = mysql_num_rows($count_newOrder);
 $totalRows_pendingOrder = mysql_num_rows($count_pendingOrder);
 $totalRows_completeOrder = mysql_num_rows($count_completeOrder);
 
+
+// Pizza Info
+
+$query_rsPizzaDetails = sprintf("SELECT * FROM cart_order_items WHERE order_id = %s AND item_name='pizza'", $colname_rsOrderDetails);
+$rsPizzaDetails = mysql_query($query_rsPizzaDetails, $online_order) or die(mysql_error());
+$row_rsPizzaDetails = mysql_fetch_assoc($rsPizzaDetails);
 ?>
 
 <!DOCTYPE html>
@@ -244,7 +250,7 @@ $totalRows_completeOrder = mysql_num_rows($count_completeOrder);
   <tr>
     <td><?php echo $i++; ?></td>
     <td>
-    <a href="pizzaInfo.php?url_temp_order_id=<?php echo $row_rsOrderDetails['temp_order_id']; ?>"><?php echo $row_rsOrderDetails['item_name']; ?></a>
+<?php echo $row_rsOrderDetails['item_name']; ?>
     </td>
     <td><?php echo $row_rsOrderDetails['selected_options_name']; ?></td>
     <td><?php echo $row_rsOrderDetails['extra_items_name']; ?></td>
@@ -256,6 +262,35 @@ $totalRows_completeOrder = mysql_num_rows($count_completeOrder);
 
 
           </table>
+
+                    <!-- Pizza Details -->
+
+                      <table class="table table-striped table-bordered">
+              <tr>
+              <th>S. No.</th>
+                <th>Pizza Name</th>
+                <th>Pizza Type</th>
+                <th>Option</th>
+                <th>Size</th>
+                <th>Side A</th>
+                <th>Side B</th>
+                <th>Total</th>
+              </tr>
+              <?php $i = 1; do { ?>
+              <tr>
+              <td><?php echo $i++; ?></td>
+                <td><?php echo $row_rsPizzaDetails['pizzaname']; ?></td>
+                <td><?php echo $row_rsPizzaDetails['pizzatype']; ?></td>
+                <td><?php echo $row_rsPizzaDetails['option']; ?></td>
+                <td><?php echo $row_rsPizzaDetails['size']; ?></td>
+                <td><?php echo $row_rsPizzaDetails['toppingsideA']; ?></td>
+                <td><?php echo $row_rsPizzaDetails['toppingsideB']; ?></td>
+                <td><?php echo $row_rsPizzaDetails['price']; ?></td>
+             
+
+              </tr>  
+               <?php } while ($row_rsPizzaDetails = mysql_fetch_assoc($rsPizzaDetails)); ?>         
+            </table>
 
 <div class="row-fluid">
 <div class="span8"

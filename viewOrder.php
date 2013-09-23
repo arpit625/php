@@ -120,7 +120,7 @@ $colname_rsViewOrder = "-1";
 
 mysql_select_db($database_online_order, $online_order);
 // $query_rsViewOrder = sprintf("SELECT mainorder_id, order_date, order_time, status_deliver, status_pickup, status_dineup, phone, add1, apt_no, city, zip, user_id, order_total, delivery_charge, order_status, payment_mode FROM orders WHERE user_id = %s", $colname_rsViewOrder);
-$query_rsViewOrder = sprintf("SELECT * FROM orders WHERE user_id = %s", $colname_rsViewOrder);
+$query_rsViewOrder = sprintf("SELECT * FROM orders WHERE user_id = %s ORDER BY order_time DESC" , $colname_rsViewOrder);
 $rsViewOrder = mysql_query($query_rsViewOrder, $online_order) or die(mysql_error());
 $row_rsViewOrder = mysql_fetch_assoc($rsViewOrder);
 $totalRows_rsViewOrder = mysql_num_rows($rsViewOrder);
@@ -159,16 +159,16 @@ $totalRows_completeOrder = mysql_num_rows($count_completeOrder);
           
 
             <div class="well">
-              <h1>Daily Orders</h1>
             <br>
 <div class="row-fluid">
-      <div class="span5 offset1">
-       <h5>
+
+              <h1>Daily Orders</h1>
+
          <span class="badge badge-info"><?php echo $totalRows_newOrder; ?></span> New / 
          <span class="badge badge-warning"><?php echo $totalRows_pendingOrder; ?></span> Pending / 
          <span class="badge badge-success"><?php echo $totalRows_completeOrder; ?></span> Complete 
-       </h5>
-      </div>
+
+
       <div class="span6 pull-right">
         <a href="<?php echo $logoutAction ?>">
         <button class="btn btn-large pull-right" type="button"><i class="icon-off"> </i> Sign Out</button>
