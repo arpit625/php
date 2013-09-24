@@ -113,9 +113,13 @@ $colname_rsOrderDetails = "-1";
 if (isset($_GET['url_mainorder_id'])) {
   $colname_rsOrderDetails = $_GET['url_mainorder_id'];
 }
+$colname_Status = "-1";
+if (isset($_GET['url_status_id'])) {
+  $colname_Status = $_GET['url_status_id'];
+}
 mysql_select_db($database_online_order, $online_order);
 // $query_rsUserInfo = sprintf("SELECT order_time,mainorder_id, status_deliver, status_pickup, status_dineup, first_name, last_name, phone, add1, apt_no, city, zip, order_total, coupon_discount, tax, delivery_charge, order_status, payment_mode FROM orders WHERE user_id = %s AND mainorder_id = %s" , GetSQLValueString($colname_rsUserInfo, "int"),GetSQLValueString($colname_rsOrderDetails, "int"));
-$query_rsUserInfo = sprintf("SELECT * FROM orders WHERE user_id = %s AND mainorder_id = %s" , GetSQLValueString($colname_rsUserInfo, "int"),GetSQLValueString($colname_rsOrderDetails, "int"));
+$query_rsUserInfo = sprintf("SELECT * FROM orders WHERE user_id = %s AND status ='%s' AND mainorder_id = %s" , GetSQLValueString($colname_rsUserInfo, "int"), $colname_Status, GetSQLValueString($colname_rsOrderDetails, "int"));
 $rsUserInfo = mysql_query($query_rsUserInfo, $online_order) or die(mysql_error());
 $row_rsUserInfo = mysql_fetch_assoc($rsUserInfo);
 $totalRows_rsUserInfo = mysql_num_rows($rsUserInfo);

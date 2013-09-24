@@ -43,18 +43,19 @@ if (isset($_GET['url_user_status'])) {
   echo "User Status Done";
 }
 mysql_select_db($database_online_order, $online_order);
-$query_rsUpdateEnable = sprintf("SELECT * FROM usr_mgmnt WHERE status = %s", GetSQLValueString($colname_rsUpdateEnable, "text"));
+$query_rsUpdateEnable = sprintf("SELECT * FROM usr_mgmnt WHERE user_id = %s", GetSQLValueString($colname_rsUpdateEnable, "text"));
 $rsUpdateEnable = mysql_query($query_rsUpdateEnable, $online_order) or die(mysql_error());
 $row_rsUpdateEnable = mysql_fetch_assoc($rsUpdateEnable);
 $totalRows_rsUpdateEnable = mysql_num_rows($rsUpdateEnable);
 
 
-$updateSQL = "UPDATE usr_mgmnt SET user_status= '$varUserStatus' WHERE status='$colname_rsUpdateEnable'";
+$updateSQL = "UPDATE usr_mgmnt SET user_status= '$varUserStatus' WHERE user_id='$colname_rsUpdateEnable'";
 
 $Result1 = mysql_query($updateSQL, $online_order) or die(mysql_error());
- 
-  header("Location: adminUserManage.php");
-
+ echo "sql successful";
+header("Location: adminUserManage.php");
+exit;
+echo "after";
 
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">

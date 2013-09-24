@@ -110,7 +110,7 @@ if (isset($_SERVER['QUERY_STRING'])) {
 }
 
 if ((isset($_POST["MM_update"])) && ($_POST["MM_update"] == "ResetUser")) {
-  $updateSQL = sprintf("UPDATE usr_mgmnt SET password=%s WHERE status=%s",
+  $updateSQL = sprintf("UPDATE usr_mgmnt SET password=%s WHERE user_id=%s",
                        GetSQLValueString($_POST['password'], "text"),
                        GetSQLValueString($_POST['statusInput'], "text"));
 
@@ -130,7 +130,7 @@ if (isset($_GET['statusID'])) {
   $colname_rsEditUser = $_GET['statusID'];
 }
 mysql_select_db($database_online_order, $online_order);
-$query_rsEditUser = sprintf("SELECT username, password, status FROM usr_mgmnt WHERE status = %s", GetSQLValueString($colname_rsEditUser, "text"));
+$query_rsEditUser = sprintf("SELECT * FROM usr_mgmnt WHERE user_id = %s", GetSQLValueString($colname_rsEditUser, "text"));
 $rsEditUser = mysql_query($query_rsEditUser, $online_order) or die(mysql_error());
 $row_rsEditUser = mysql_fetch_assoc($rsEditUser);
 $totalRows_rsEditUser = mysql_num_rows($rsEditUser);
@@ -194,7 +194,7 @@ $totalRows_rsEditUser = mysql_num_rows($rsEditUser);
               <input id="submit" name="submit" class="btn" valur="Add User" type="submit">
             </div>
           </div>
-<input name="statusInput" type="hidden" id="statusInput" value="<?php echo $row_rsEditUser['status']; ?>">
+<input name="statusInput" type="hidden" id="statusInput" value="<?php echo $row_rsEditUser['user_id']; ?>">
         </fieldset>
         <input type="hidden" name="MM_update" value="ResetUser">
             </form>

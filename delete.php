@@ -32,7 +32,7 @@ function GetSQLValueString($theValue, $theType, $theDefinedValue = "", $theNotDe
 }
 
 if ((isset($_GET['statusID'])) && ($_GET['statusID'] != "")) {
-  $deleteSQL = sprintf("DELETE FROM usr_mgmnt WHERE status=%s",
+  $deleteSQL = sprintf("DELETE FROM usr_mgmnt WHERE user_id=%s",
                        GetSQLValueString($_GET['statusID'], "int"));
 
   mysql_select_db($database_online_order, $online_order);

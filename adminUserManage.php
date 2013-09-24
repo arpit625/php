@@ -105,7 +105,8 @@ function GetSQLValueString($theValue, $theType, $theDefinedValue = "", $theNotDe
 }
 
 mysql_select_db($database_online_order, $online_order);
-$query_rsUsers = "SELECT username, password, status, user_status FROM usr_mgmnt";
+// $query_rsUsers = "SELECT username, password, status, user_status FROM usr_mgmnt";
+$query_rsUsers = "SELECT * FROM usr_mgmnt";
 $rsUsers = mysql_query($query_rsUsers, $online_order) or die(mysql_error());
 $row_rsUsers = mysql_fetch_assoc($rsUsers);
 $totalRows_rsUsers = mysql_num_rows($rsUsers);
@@ -162,7 +163,7 @@ $totalRows_rsUsers = mysql_num_rows($rsUsers);
     <td><?php echo $row_rsUsers['password']; ?></td>
     <td><?php echo $row_rsUsers['status']; ?></td>
     <td>
-      <a href="adminEnableDisable.php?url_user_status=enable&url_status=<?php echo $row_rsUsers['status']; ?>">
+      <a href="adminEnableDisable.php?url_user_status=enable&url_status=<?php echo $row_rsUsers['user_id']; ?>">
       <!-- <button class="btn btn-success" type="button">Enable</button> -->
       <button class="btn btn-success
       <?php if ($row_rsUsers['user_status']=='enable') {
@@ -171,17 +172,17 @@ $totalRows_rsUsers = mysql_num_rows($rsUsers);
       " type="button">Enable</button>
       </a>    </td>
     <td>
-      <a href="adminEnableDisable.php?url_user_status=disable&url_status=<?php echo $row_rsUsers['status']; ?>">
+      <a href="adminEnableDisable.php?url_user_status=disable&url_status=<?php echo $row_rsUsers['user_id']; ?>">
       <button class="btn btn-inverse
       <?php if ($row_rsUsers['user_status']=='disable') {
         echo 'disabled';
       } ?>
       " type="button">Disable</button>
       </a>    </td>
-    <td><a href="delete.php?statusID=<?php echo $row_rsUsers['status']; ?>">
+    <td><a href="delete.php?statusID=<?php echo $row_rsUsers['user_id']; ?>">
       <button class="btn btn-danger" type="button">Delete</button>
     </a></td>
-    <td><a href="adminEditUser.php?statusID=<?php echo $row_rsUsers['status']; ?>">
+    <td><a href="adminEditUser.php?statusID=<?php echo $row_rsUsers['user_id']; ?>">
       <button class="btn btn-reset" type="button">Reset</button>
     </a></td>
   </tr>
