@@ -173,7 +173,7 @@ if ((isset($_POST["MM_insert"])) && ($_POST["MM_insert"] == "newUser")) {
           <div class="control-group">
             <label class="control-label">Password</label>
             <div class="controls">
-              <input id="password" name="password" type="password" placeholder="Enter Password" class="input-xlarge" required>
+              <input id="password" name="password" type="text" placeholder="Enter Password" class="input-xlarge" required>
 
             </div>
           </div>
