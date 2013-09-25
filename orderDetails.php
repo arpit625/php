@@ -113,6 +113,7 @@ $colname_rsOrderDetails = "-1";
 if (isset($_GET['url_mainorder_id'])) {
   $colname_rsOrderDetails = $_GET['url_mainorder_id'];
 }
+$colname_Status = "-1";
 if (isset($_GET['url_status_id'])) {
   $colname_Status = $_GET['url_status_id'];
 }
@@ -337,6 +338,7 @@ $row_rsPizzaDetails = mysql_fetch_assoc($rsPizzaDetails);
     </select>
 <input type="hidden" name="url_mainorder_id" value="<?php echo $colname_rsOrderDetails; ?>">
 <input type="hidden" name="url_user_id" value="<?php echo $colname_rsUserInfo; ?>">
+<input type="hidden" name="url_status_id" value="<?php echo $colname_Status; ?>">
 <input id="orderChange" name="orderChange" class="btn btn-success" type="submit" value="Change">
 
 </fieldset>
