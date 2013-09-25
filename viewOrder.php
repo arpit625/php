@@ -16,6 +16,10 @@ if ((isset($_GET['doLogout'])) &&($_GET['doLogout']=="true")){
   $_SESSION['MM_Username'] = NULL;
   $_SESSION['MM_UserGroup'] = NULL;
   $_SESSION['PrevUrl'] = NULL;
+    $_SESSION['MM_Userid'] = NULL ;
+  $_SESSION['MM_Status'] = NULL ;
+   unset($_SESSION['MM_Userid']);
+  unset($_SESSION['MM_Status']);
   unset($_SESSION['MM_Username']);
   unset($_SESSION['MM_UserGroup']);
   unset($_SESSION['PrevUrl']);
@@ -104,33 +108,41 @@ function GetSQLValueString($theValue, $theType, $theDefinedValue = "", $theNotDe
 }
 }
 $colname_rsUserDetail = "-1";
+$colname_rsUserId = -1;
+$colname_rsStatus = "-1";
 if (isset($_SESSION['MM_Username'])) {
   $colname_rsUserDetail = $_SESSION['MM_Username'];
 }
+if (isset($_SESSION['MM_Userid'])) {
+  $colname_rsUserId = $_SESSION['MM_Userid'];
+}
+if (isset($_SESSION['MM_Status'])) {
+  $colname_rsStatus = $_SESSION['MM_Status'];
+}
+//mysql_select_db($database_online_order, $online_order);
+//$query_rsUserDetail = sprintf("SELECT * FROM usr_mgmnt WHERE username = %s", GetSQLValueString($colname_rsUserDetail, "text"));
+//$rsUserDetail = mysql_query($query_rsUserDetail, $online_order) or die(mysql_error());
+//$row_rsUserDetail = mysql_fetch_assoc($rsUserDetail);
+//$totalRows_rsUserDetail = mysql_num_rows($rsUserDetail);
+
+//$userid = $colname_rsUserId;
+//$status_id = $colname_rsStatus;
+//$colname_rsViewOrder = "-1";
+
+  $colname_rsViewOrder = $colname_rsUserId;
+  $colname_Status = $colname_rsStatus;
+  echo $colname_rsViewOrder;
+  echo $colname_Status;
 mysql_select_db($database_online_order, $online_order);
-$query_rsUserDetail = sprintf("SELECT * FROM usr_mgmnt WHERE username = %s", GetSQLValueString($colname_rsUserDetail, "text"));
-$rsUserDetail = mysql_query($query_rsUserDetail, $online_order) or die(mysql_error());
-$row_rsUserDetail = mysql_fetch_assoc($rsUserDetail);
-$totalRows_rsUserDetail = mysql_num_rows($rsUserDetail);
-
-$user_id = $row_rsUserDetail['user_id'];
-$status_id = $row_rsUserDetail['status'];
-$colname_rsViewOrder = "-1";
-
-  $colname_rsViewOrder = $user_id;
-  $colname_Status = $status_id;
-
-mysql_select_db($database_online_order, $online_order);
-// $query_rsViewOrder = sprintf("SELECT mainorder_id, order_date, order_time, status_deliver, status_pickup, status_dineup, phone, add1, apt_no, city, zip, user_id, order_total, delivery_charge, order_status, payment_mode FROM orders WHERE user_id = %s", $colname_rsViewOrder);
-$query_rsViewOrder = sprintf("SELECT * FROM orders WHERE user_id = %s AND status = '%s' ORDER BY order_time DESC" , $colname_rsViewOrder,$colname_Status);
+$query_rsViewOrder = sprintf("SELECT * FROM orders WHERE userid = %s AND status = '%s' ORDER BY order_time DESC" , $colname_rsViewOrder,$colname_Status);
 $rsViewOrder = mysql_query($query_rsViewOrder, $online_order) or die(mysql_error());
 $row_rsViewOrder = mysql_fetch_assoc($rsViewOrder);
 $totalRows_rsViewOrder = mysql_num_rows($rsViewOrder);
 
 // New , Pending , Complete Order Count Details
-$query_newOrder = sprintf("SELECT * FROM order_updt_status WHERE status = %s AND update_status = 1", $colname_rsViewOrder);
-$query_pendingOrder = sprintf("SELECT * FROM order_updt_status WHERE username = %s AND update_status = 2", GetSQLValueString($colname_rsUserDetail, "text"));
-$query_completeOrder = sprintf("SELECT * FROM order_updt_status WHERE username = %s AND update_status = 3", GetSQLValueString($colname_rsUserDetail, "text"));
+$query_newOrder = sprintf("SELECT * FROM order_updt_status WHERE userid = %s AND status = %s AND update_status = 1", $colname_rsViewOrder,GetSQLValueString($colname_Status, "text"));
+$query_pendingOrder = sprintf("SELECT * FROM order_updt_status WHERE userid = %s AND status = %s AND update_status = 2",$colname_rsViewOrder, GetSQLValueString($colname_Status, "text"));
+$query_completeOrder = sprintf("SELECT * FROM order_updt_status WHERE userid = %s AND status = %s AND update_status = 3",$colname_rsViewOrder,GetSQLValueString($colname_Status, "text"));
 $count_newOrder = mysql_query($query_newOrder, $online_order) or die(mysql_error());
 $count_pendingOrder = mysql_query($query_pendingOrder, $online_order) or die(mysql_error());
 $count_completeOrder = mysql_query($query_completeOrder, $online_order) or die(mysql_error());
@@ -194,7 +206,7 @@ $totalRows_completeOrder = mysql_num_rows($count_completeOrder);
               <?php do { ?>
   <tr>
       <td>
-      <a href="orderDetails.php?url_mainorder_id=<?php echo $row_rsViewOrder['mainorder_id']; ?>&url_user_id=<?php echo $row_rsViewOrder['user_id']; ?>&url_status_id=<?php echo $row_rsViewOrder['status']; ?>">
+      <a href="orderDetails.php?url_mainorder_id=<?php echo $row_rsViewOrder['mainorder_id']; ?>&url_user_id=<?php echo $row_rsViewOrder['userid']; ?>&url_status_id=<?php echo $row_rsViewOrder['status']; ?>">
         <button class="btn btn-reset" type="button"><?php echo $row_rsViewOrder['mainorder_id']; ?></button>
       </a> 
     </td>
@@ -247,6 +259,4 @@ $totalRows_completeOrder = mysql_num_rows($count_completeOrder);
     </html>
 <?php
 mysql_free_result($rsViewOrder);
-
-mysql_free_result($rsUserDetail);
 ?>

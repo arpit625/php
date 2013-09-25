@@ -14,10 +14,14 @@ if ((isset($_SERVER['QUERY_STRING'])) && ($_SERVER['QUERY_STRING'] != "")){
 if ((isset($_GET['doLogout'])) &&($_GET['doLogout']=="true")){
   //to fully log out a visitor we need to clear the session varialbles
   $_SESSION['MM_Username'] = NULL;
+  $_SESSION['MM_Userid'] = NULL ;
+  $_SESSION['MM_Status'] = NULL ;
   $_SESSION['MM_UserGroup'] = NULL;
   $_SESSION['PrevUrl'] = NULL;
   unset($_SESSION['MM_Username']);
   unset($_SESSION['MM_UserGroup']);
+  unset($_SESSION['MM_Userid']);
+  unset($_SESSION['MM_Status']);
   unset($_SESSION['PrevUrl']);
 	
   $logoutGoTo = "index.php";
@@ -118,12 +122,10 @@ if (isset($_GET['url_status_id'])) {
   $colname_Status = $_GET['url_status_id'];
 }
 mysql_select_db($database_online_order, $online_order);
-// $query_rsUserInfo = sprintf("SELECT order_time,mainorder_id, status_deliver, status_pickup, status_dineup, first_name, last_name, phone, add1, apt_no, city, zip, order_total, coupon_discount, tax, delivery_charge, order_status, payment_mode FROM orders WHERE user_id = %s AND mainorder_id = %s" , GetSQLValueString($colname_rsUserInfo, "int"),GetSQLValueString($colname_rsOrderDetails, "int"));
-$query_rsUserInfo = sprintf("SELECT * FROM orders WHERE user_id = %s AND status ='%s' AND mainorder_id = %s" , GetSQLValueString($colname_rsUserInfo, "int"),$colname_Status,GetSQLValueString($colname_rsOrderDetails, "int"));
+$query_rsUserInfo = sprintf("SELECT * FROM orders WHERE userid = %s AND status ='%s' AND mainorder_id = %s" , GetSQLValueString($colname_rsUserInfo, "int"),$colname_Status,GetSQLValueString($colname_rsOrderDetails, "int"));
 $rsUserInfo = mysql_query($query_rsUserInfo, $online_order) or die(mysql_error());
 $row_rsUserInfo = mysql_fetch_assoc($rsUserInfo);
 $totalRows_rsUserInfo = mysql_num_rows($rsUserInfo);
-
 
 
 mysql_select_db($database_online_order, $online_order);
@@ -132,7 +134,6 @@ $query_rsOrderDetails = sprintf("SELECT * FROM cart_order_items WHERE order_id =
 $rsOrderDetails = mysql_query($query_rsOrderDetails, $online_order) or die(mysql_error());
 $row_rsOrderDetails = mysql_fetch_assoc($rsOrderDetails);
 $totalRows_rsOrderDetails = mysql_num_rows($rsOrderDetails);
-
 // Select Status
 // $query_update_status = sprintf("SELECT temp_order_id, extra_price, price, item_name, extra_items_name,selected_options_name FROM cart_order_items WHERE order_id = %s", GetSQLValueString($colname_rsOrderDetails, "int"));
 // $rsOrderDetails = mysql_query($query_update_status, $online_order) or die(mysql_error());
@@ -141,15 +142,14 @@ $totalRows_rsOrderDetails = mysql_num_rows($rsOrderDetails);
 
 if (isset($_GET['orderStatus'])) {
   $orderStatus = $_GET['orderStatus'];
-// $updateSQL = "UPDATE order_updt_status SET update_status= '$orderStatus' WHERE status = '$colname_rsUserInfo' AND mainorder_id = '$colname_rsOrderDetails'";
-$updateSQL = sprintf("UPDATE order_updt_status SET update_status= %s WHERE status = %s AND mainorder_id = %s",$orderStatus,$colname_rsUserInfo,$colname_rsOrderDetails);
+$updateSQL = sprintf("UPDATE order_updt_status SET update_status= %s WHERE status = '%s' AND userid = %s AND mainorder_id = %s",$orderStatus,$colname_Status,GetSQLValueString($colname_rsUserInfo, "int"),GetSQLValueString($colname_rsOrderDetails, "int"));
 
 $Result1 = mysql_query($updateSQL, $online_order) or die(mysql_error());
 
 }
 
 // Order Update Status ( new/ pending/complete )
-$query_rsOrderStatus = sprintf("SELECT * FROM order_updt_status WHERE status = %s AND mainorder_id = %s",$colname_rsUserInfo,$colname_rsOrderDetails);
+$query_rsOrderStatus = sprintf("SELECT * FROM order_updt_status WHERE status = '%s' AND userid=%s AND mainorder_id = %s",$colname_Status,GetSQLValueString($colname_rsUserInfo, "int"),GetSQLValueString($colname_rsOrderDetails, "int"));
 $rsOrderStatus = mysql_query($query_rsOrderStatus, $online_order) or die(mysql_error());
 $row_orderStatus = mysql_fetch_assoc($rsOrderStatus);
 // $totalRows_rsOrderStatus = mysql_num_rows($rsOrderStatus);
@@ -157,9 +157,9 @@ $update_status = $row_orderStatus['update_status'];
 
 
 // New , Pending , Complete Order Count Details
-$query_newOrder = sprintf("SELECT * FROM order_updt_status WHERE update_status = 1 AND status='$colname_rsUserInfo'");
-$query_pendingOrder = sprintf("SELECT * FROM order_updt_status WHERE update_status = 2 AND status='$colname_rsUserInfo'");
-$query_completeOrder = sprintf("SELECT * FROM order_updt_status WHERE update_status = 3 AND status='$colname_rsUserInfo'");
+$query_newOrder = sprintf("SELECT * FROM order_updt_status WHERE update_status = 1 AND status='$colname_Status' AND userid = %s",GetSQLValueString($colname_rsUserInfo, "int") );
+$query_pendingOrder = sprintf("SELECT * FROM order_updt_status WHERE update_status = 2 AND status='$colname_Status' AND userid = %s",GetSQLValueString($colname_rsUserInfo, "int") );
+$query_completeOrder = sprintf("SELECT * FROM order_updt_status WHERE update_status = 3 AND status='$colname_Status' AND userid = %s",GetSQLValueString($colname_rsUserInfo, "int") );
 $count_newOrder = mysql_query($query_newOrder, $online_order) or die(mysql_error());
 $count_pendingOrder = mysql_query($query_pendingOrder, $online_order) or die(mysql_error());
 $count_completeOrder = mysql_query($query_completeOrder, $online_order) or die(mysql_error());

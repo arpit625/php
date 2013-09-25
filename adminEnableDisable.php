@@ -34,8 +34,9 @@ function GetSQLValueString($theValue, $theType, $theDefinedValue = "", $theNotDe
 
 $colname_rsUpdateEnable = "-1";
 $varUserStatus = "disable";
-if (isset($_GET['url_status'])) {
+if (isset($_GET['url_status']) && isset($_GET['userID'])) {
   $colname_rsUpdateEnable = $_GET['url_status'];
+  $colname_rsUserID = $_GET['userID'];
   echo "Status Done";
 }
 if (isset($_GET['url_user_status'])) {
@@ -43,19 +44,18 @@ if (isset($_GET['url_user_status'])) {
   echo "User Status Done";
 }
 mysql_select_db($database_online_order, $online_order);
-$query_rsUpdateEnable = sprintf("SELECT * FROM usr_mgmnt WHERE user_id = %s", GetSQLValueString($colname_rsUpdateEnable, "text"));
+$query_rsUpdateEnable = sprintf("SELECT * FROM usr_mgmnt WHERE userid = %s AND status = '%s'", GetSQLValueString($colname_rsUserID, "int"),$colname_rsUpdateEnable);
 $rsUpdateEnable = mysql_query($query_rsUpdateEnable, $online_order) or die(mysql_error());
 $row_rsUpdateEnable = mysql_fetch_assoc($rsUpdateEnable);
 $totalRows_rsUpdateEnable = mysql_num_rows($rsUpdateEnable);
 
 
-$updateSQL = "UPDATE usr_mgmnt SET user_status= '$varUserStatus' WHERE user_id='$colname_rsUpdateEnable'";
+$updateSQL = sprintf("UPDATE usr_mgmnt SET user_status= '%s' WHERE userid=%s AND status='%s'", $varUserStatus,GetSQLValueString($colname_rsUserID, "int"),$colname_rsUpdateEnable);
 
 $Result1 = mysql_query($updateSQL, $online_order) or die(mysql_error());
- echo "sql successful";
-header("Location: adminUserManage.php");
-exit;
-echo "after";
+ 
+  header("Location: adminUserManage.php");
+
 
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">

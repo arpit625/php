@@ -110,9 +110,7 @@ if (isset($_SERVER['QUERY_STRING'])) {
 }
 
 if ((isset($_POST["MM_update"])) && ($_POST["MM_update"] == "ResetUser")) {
-  $updateSQL = sprintf("UPDATE usr_mgmnt SET password=%s WHERE user_id=%s",
-                       GetSQLValueString($_POST['password'], "text"),
-                       GetSQLValueString($_POST['statusInput'], "text"));
+  $updateSQL = sprintf("UPDATE usr_mgmnt SET password=%s WHERE userid=%s AND status=%s",GetSQLValueString($_POST['password'], "text"),GetSQLValueString($_POST['useridInput'], "int"),GetSQLValueString($_POST['statusInput'], "text"));
 
   mysql_select_db($database_online_order, $online_order);
   $Result1 = mysql_query($updateSQL, $online_order) or die(mysql_error());
@@ -126,11 +124,12 @@ if ((isset($_POST["MM_update"])) && ($_POST["MM_update"] == "ResetUser")) {
 }
 
 $colname_rsEditUser = "-1";
-if (isset($_GET['statusID'])) {
+if (isset($_GET['statusID']) && isset($_GET['userID'])) {
   $colname_rsEditUser = $_GET['statusID'];
+  $colname_rsUserID = $_GET['userID'];
 }
 mysql_select_db($database_online_order, $online_order);
-$query_rsEditUser = sprintf("SELECT * FROM usr_mgmnt WHERE user_id = %s", GetSQLValueString($colname_rsEditUser, "text"));
+$query_rsEditUser = sprintf("SELECT * FROM usr_mgmnt WHERE userid = %s AND status='%s'", GetSQLValueString($colname_rsUserID, "int"),$colname_rsEditUser);
 $rsEditUser = mysql_query($query_rsEditUser, $online_order) or die(mysql_error());
 $row_rsEditUser = mysql_fetch_assoc($rsEditUser);
 $totalRows_rsEditUser = mysql_num_rows($rsEditUser);
@@ -194,7 +193,8 @@ $totalRows_rsEditUser = mysql_num_rows($rsEditUser);
               <input id="submit" name="submit" class="btn" valur="Add User" type="submit">
             </div>
           </div>
-<input name="statusInput" type="hidden" id="statusInput" value="<?php echo $row_rsEditUser['user_id']; ?>">
+<input name="useridInput" type="hidden" id="useridInput" value="<?php echo $row_rsEditUser['userid']; ?>">
+<input name="statusInput" type="hidden" id="statusInput" value="<?php echo $row_rsEditUser['status']; ?>">
         </fieldset>
         <input type="hidden" name="MM_update" value="ResetUser">
             </form>

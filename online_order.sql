@@ -126,20 +126,20 @@ INSERT INTO `orders` (`mainorder_id`, `ip_address`, `session_id`, `order_date`, 
 
 CREATE TABLE IF NOT EXISTS `order_updt_status` (
   `username` varchar(255) NOT NULL,
+  `userid` int(11) NOT NULL,
   `status` varchar(255) NOT NULL,
   `update_status` int(10) NOT NULL DEFAULT '1',
-  `mainorder_id` int(11) DEFAULT NULL,
-  PRIMARY KEY (`username`,`status`)
+  `mainorder_id` int(11) DEFAULT NULL,  
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `order_updt_status`
 --
 
-INSERT INTO `order_updt_status` (`username`, `status`, `update_status`, `mainorder_id`) VALUES
-('admin', '1', 0, NULL),
-('root', '3', 2, 1827364),
-('user', '2', 3, 2748359);
+INSERT INTO `order_updt_status` (`username`,`userid` ,`status`, `update_status`, `mainorder_id`) VALUES
+('admin',11, '1', 0, NULL),
+('root',11, '3', 2, 1827364),
+('user',11, '2', 3, 2748359);
 
 -- --------------------------------------------------------
 
@@ -148,25 +148,25 @@ INSERT INTO `order_updt_status` (`username`, `status`, `update_status`, `mainord
 --
 
 CREATE TABLE IF NOT EXISTS `usr_mgmnt` (
+  `user_id` int(10) NOT NULL AUTO_INCREMENT,
   `username` varchar(255) NOT NULL,
   `password` varchar(255) NOT NULL,
   `user_status` varchar(10) DEFAULT 'disable',
-  `user_id` int(10) NOT NULL AUTO_INCREMENT,
   `role` int(2) NOT NULL DEFAULT '0',
+  `userid` int(11) NULL,
+  `status` varchar(255) NULL,
   `last_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `status` varchar(255) NOT NULL,
-  PRIMARY KEY (`username`,`user_id`),
-  UNIQUE KEY `status` (`user_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=4 ;
+  PRIMARY KEY (`user_id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 
 --
 -- Dumping data for table `usr_mgmnt`
 --
 
-INSERT INTO `usr_mgmnt` (`username`, `password`, `user_status`, `user_id`, `role`, `last_time`, `status`) VALUES
-('admin', 'admin', 'enable', 1, 1, '2013-09-24 04:55:27', 'enable'),
-('root', '123', 'enable', 3, 0, '0000-00-00 00:00:00', 'enable'),
-('user', 'user', 'enable', 2, 0, '0000-00-00 00:00:00', 'enable');
+INSERT INTO `usr_mgmnt` (`user_id`,`username`, `password`, `user_status`, `role`,`userid`,`status`,`last_time`) VALUES
+(NULL,'admin', 'admin', 'enable',1,11,'enable', '2013-09-25 04:55:27'),
+(NULL,'root', '123', 'enable',0,0,'enable','2013-09-25 04:55:27'),
+(NULL,'user', 'user', 'enable',0,11,'enable' ,'2013-09-25 04:55:27');
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;

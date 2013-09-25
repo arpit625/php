@@ -31,9 +31,9 @@ function GetSQLValueString($theValue, $theType, $theDefinedValue = "", $theNotDe
 }
 }
 
-if ((isset($_GET['statusID'])) && ($_GET['statusID'] != "")) {
-  $deleteSQL = sprintf("DELETE FROM usr_mgmnt WHERE user_id=%s",
-                       GetSQLValueString($_GET['statusID'], "int"));
+if ((isset($_GET['statusID'])) && ($_GET['statusID'] != "") && (isset($_GET['userID'])) && ($_GET['statusID'] != "")) {
+  $deleteSQL = sprintf("DELETE FROM usr_mgmnt WHERE userid=%s AND status = '%s'",
+                       GetSQLValueString($_GET['userID'], "int"),$_GET['statusID']);
 
   mysql_select_db($database_online_order, $online_order);
   $Result1 = mysql_query($deleteSQL, $online_order) or die(mysql_error());

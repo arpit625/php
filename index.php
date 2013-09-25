@@ -51,10 +51,13 @@ if (isset($_POST['username'])) {
   $MM_redirecttoReferrer = true;
   mysql_select_db($database_online_order, $online_order);
   	
-  $LoginRS__query=sprintf("SELECT username, password, role FROM usr_mgmnt WHERE username=%s AND password=%s AND user_status='enable'",
+  $LoginRS__query=sprintf("SELECT username, password, role, userid, status FROM usr_mgmnt WHERE username=%s AND password=%s AND user_status='enable'",
   GetSQLValueString($loginUsername, "text"), GetSQLValueString($password, "text")); 
    
   $LoginRS = mysql_query($LoginRS__query, $online_order) or die(mysql_error());
+  $row_LoginRS = mysql_fetch_assoc($LoginRS);
+  $userid = $row_LoginRS['userid'];
+  $status_id = $row_LoginRS['status'];
   $loginFoundUser = mysql_num_rows($LoginRS);
   if ($loginFoundUser) {
     
@@ -63,6 +66,8 @@ if (isset($_POST['username'])) {
 	if (PHP_VERSION >= 5.1) {session_regenerate_id(true);} else {session_regenerate_id();}
     //declare two session variables and assign them
     $_SESSION['MM_Username'] = $loginUsername;
+	$_SESSION['MM_Userid'] = $userid ;
+	$_SESSION['MM_Status'] = $status_id ;
     $_SESSION['MM_UserGroup'] = $loginStrGroup;	
     //$_SESSION['MM_NewOrder'] = 0;         // For New Order
 

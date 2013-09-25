@@ -16,6 +16,10 @@ if ((isset($_GET['doLogout'])) &&($_GET['doLogout']=="true")){
   $_SESSION['MM_Username'] = NULL;
   $_SESSION['MM_UserGroup'] = NULL;
   $_SESSION['PrevUrl'] = NULL;
+      $_SESSION['MM_Userid'] = NULL ;
+  $_SESSION['MM_Status'] = NULL ;
+   unset($_SESSION['MM_Userid']);
+  unset($_SESSION['MM_Status']);
   unset($_SESSION['MM_Username']);
   unset($_SESSION['MM_UserGroup']);
   unset($_SESSION['PrevUrl']);
@@ -263,7 +267,7 @@ else
                 
 
                <td>
-                  <a href="adminOrderDetails.php?url_mainorder_id=<?php echo $row_rsViewAll['mainorder_id']; ?>&url_user_id=<?php echo $row_rsViewAll['user_id']; ?>&url_status_id=<?php echo $row_rsViewAll['status']; ?>">
+                  <a href="adminOrderDetails.php?url_mainorder_id=<?php echo $row_rsViewAll['mainorder_id']; ?>&url_user_id=<?php echo $row_rsViewAll['userid']; ?>&url_status_id=<?php echo $row_rsViewAll['status']; ?>">
                   <button class="btn btn-reset" type="button"><?php echo $row_rsViewAll['mainorder_id']; ?></button>
                 </a>   
 
