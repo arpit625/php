@@ -131,8 +131,7 @@ if (isset($_SESSION['MM_Status'])) {
 
   $colname_rsViewOrder = $colname_rsUserId;
   $colname_Status = $colname_rsStatus;
-  echo $colname_rsViewOrder;
-  echo $colname_Status;
+
 mysql_select_db($database_online_order, $online_order);
 $query_rsViewOrder = sprintf("SELECT * FROM orders WHERE userid = %s AND status = '%s' ORDER BY order_time DESC" , $colname_rsViewOrder,$colname_Status);
 $rsViewOrder = mysql_query($query_rsViewOrder, $online_order) or die(mysql_error());
