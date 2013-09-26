@@ -128,8 +128,9 @@ CREATE TABLE IF NOT EXISTS `order_updt_status` (
   `username` varchar(255) NOT NULL,
   `userid` int(11) NOT NULL,
   `status` varchar(255) NOT NULL,
-  `update_status` int(10) NOT NULL DEFAULT '1',
-  `mainorder_id` int(11) DEFAULT NULL 
+  `update_status` varchar(20) NOT NULL DEFAULT 'New',
+  `mainorder_id` int(11) DEFAULT NULL, 
+  UNIQUE KEY (`userid`, `status`, `mainorder_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
@@ -137,9 +138,9 @@ CREATE TABLE IF NOT EXISTS `order_updt_status` (
 --
 
 INSERT INTO `order_updt_status` (`username`,`userid` ,`status`, `update_status`, `mainorder_id`) VALUES
-('admin',11, '1', 0, NULL),
-('root',11, '3', 2, 1827364),
-('user',11, '2', 3, 2748359);
+('admin',11, '1', 'New', NULL),
+('root',11, '3', 'Pending', 1827364),
+('user',11, '2', 'Complete', 2748359);
 
 -- --------------------------------------------------------
 

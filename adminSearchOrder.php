@@ -114,11 +114,11 @@ $endDate = (isset($_POST['endDate']) ? $_POST['endDate']: null);
 
 mysql_select_db($database_online_order, $online_order);
 if(!empty($orderNo)&& isset($orderNo)) 
-  $query_rsViewAll = sprintf("SELECT * FROM orders WHERE mainorder_id = %s ORDER BY order_time DESC", $_POST['orderNo']);
+  $query_rsViewAll = sprintf("SELECT * FROM orders o1, order_updt_status o2 WHERE o1.mainorder_id = %s  AND o1.mainorder_id = o2.mainorder_id ORDER BY order_time DESC", $_POST['orderNo']);
 elseif(!empty($startDate) && !empty($endDate) && isset($startDate) && isset($endDate)) 
-  $query_rsViewAll = sprintf("SELECT * FROM orders WHERE order_date between CAST('%s' AS DATE) and CAST('%s' AS DATE) ORDER BY order_time DESC", $_POST['startDate'], $_POST['endDate']);
+  $query_rsViewAll = sprintf("SELECT * FROM orders o1, order_updt_status o2 WHERE order_date between CAST('%s' AS DATE) and CAST('%s' AS DATE) AND o1.mainorder_id = o2.mainorder_id ORDER BY order_time DESC", $_POST['startDate'], $_POST['endDate']);
 else 
-  $query_rsViewAll = "SELECT * FROM orders ORDER BY order_time DESC";
+  $query_rsViewAll = "SELECT * FROM orders o1, order_updt_status o2 where o1.mainorder_id = o2.mainorder_id ORDER BY order_time DESC";
 
 
 if (isset($_GET['url_daily_search'])) {
@@ -134,9 +134,9 @@ $totalRows_rsViewAll = mysql_num_rows($rsViewAll);
 
 
 // New , Pending , Complete Order Count Details
-$query_newOrder = sprintf("SELECT * FROM order_updt_status WHERE update_status = 1");
-$query_pendingOrder = sprintf("SELECT * FROM order_updt_status WHERE update_status = 2");
-$query_completeOrder = sprintf("SELECT * FROM order_updt_status WHERE update_status = 3");
+$query_newOrder = sprintf("SELECT * FROM order_updt_status WHERE update_status = 'New'");
+$query_pendingOrder = sprintf("SELECT * FROM order_updt_status WHERE update_status = 'Pending'");
+$query_completeOrder = sprintf("SELECT * FROM order_updt_status WHERE update_status = 'Complete'");
 $count_newOrder = mysql_query($query_newOrder, $online_order) or die(mysql_error());
 $count_pendingOrder = mysql_query($query_pendingOrder, $online_order) or die(mysql_error());
 $count_completeOrder = mysql_query($query_completeOrder, $online_order) or die(mysql_error());
@@ -305,7 +305,7 @@ else
                                
 
                 <td><?php echo $row_rsViewAll['order_total']; ?></td>
-                <td><?php echo $row_rsViewAll['order_status']; ?></td>
+                <td><?php echo $row_rsViewAll['update_status']; ?></td>
                 <td>
       <?php 
 			   	if($row_rsViewAll['status_deliver'] == "yes")

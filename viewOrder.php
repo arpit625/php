@@ -133,15 +133,15 @@ if (isset($_SESSION['MM_Status'])) {
   $colname_Status = $colname_rsStatus;
 
 mysql_select_db($database_online_order, $online_order);
-$query_rsViewOrder = sprintf("SELECT * FROM orders WHERE userid = %s AND status = '%s' ORDER BY order_time DESC" , $colname_rsViewOrder,$colname_Status);
+$query_rsViewOrder = sprintf("SELECT * FROM orders o1, order_updt_status o2 WHERE o1.userid = %s AND o1.status = '%s' and o1.mainorder_id = o2.mainorder_id ORDER BY order_time DESC" , $colname_rsViewOrder,$colname_Status);
 $rsViewOrder = mysql_query($query_rsViewOrder, $online_order) or die(mysql_error());
 $row_rsViewOrder = mysql_fetch_assoc($rsViewOrder);
 $totalRows_rsViewOrder = mysql_num_rows($rsViewOrder);
 
 // New , Pending , Complete Order Count Details
-$query_newOrder = sprintf("SELECT * FROM order_updt_status WHERE userid = %s AND status = %s AND update_status = 1", $colname_rsViewOrder,GetSQLValueString($colname_Status, "text"));
-$query_pendingOrder = sprintf("SELECT * FROM order_updt_status WHERE userid = %s AND status = %s AND update_status = 2",$colname_rsViewOrder, GetSQLValueString($colname_Status, "text"));
-$query_completeOrder = sprintf("SELECT * FROM order_updt_status WHERE userid = %s AND status = %s AND update_status = 3",$colname_rsViewOrder,GetSQLValueString($colname_Status, "text"));
+$query_newOrder = sprintf("SELECT * FROM order_updt_status WHERE userid = %s AND status = %s AND update_status = 'New'", $colname_rsViewOrder,GetSQLValueString($colname_Status, "text"));
+$query_pendingOrder = sprintf("SELECT * FROM order_updt_status WHERE userid = %s AND status = %s AND update_status = 'Pending'",$colname_rsViewOrder, GetSQLValueString($colname_Status, "text"));
+$query_completeOrder = sprintf("SELECT * FROM order_updt_status WHERE userid = %s AND status = %s AND update_status = 'Complete'",$colname_rsViewOrder,GetSQLValueString($colname_Status, "text"));
 $count_newOrder = mysql_query($query_newOrder, $online_order) or die(mysql_error());
 $count_pendingOrder = mysql_query($query_pendingOrder, $online_order) or die(mysql_error());
 $count_completeOrder = mysql_query($query_completeOrder, $online_order) or die(mysql_error());
@@ -231,7 +231,7 @@ $totalRows_completeOrder = mysql_num_rows($count_completeOrder);
                 ?>
                 </td>
     <td><?php echo $row_rsViewOrder['order_total']; ?></td>
-    <td><?php echo $row_rsViewOrder['order_status']; ?></td>
+    <td><?php echo $row_rsViewOrder['update_status']; ?></td>
     <td>
       <?php 
 			   	if($row_rsViewOrder['status_deliver'] == "yes")
