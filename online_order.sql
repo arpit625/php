@@ -129,7 +129,7 @@ CREATE TABLE IF NOT EXISTS `order_updt_status` (
   `userid` int(11) NOT NULL,
   `status` varchar(255) NOT NULL,
   `update_status` int(10) NOT NULL DEFAULT '1',
-  `mainorder_id` int(11) DEFAULT NULL,  
+  `mainorder_id` int(11) DEFAULT NULL 
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
