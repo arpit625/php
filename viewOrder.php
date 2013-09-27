@@ -150,6 +150,19 @@ $totalRows_pendingOrder = mysql_num_rows($count_pendingOrder);
 $totalRows_completeOrder = mysql_num_rows($count_completeOrder);
 
 
+// Notification
+$query_lastTime = "SELECT * FROM usr_mgmnt WHERE userid='$colname_rsUserId' AND status='$colname_rsStatus'";
+$lastTime = mysql_query($query_lastTime, $online_order) or die(mysql_error());
+$row_lastTime = mysql_fetch_assoc($lastTime);
+$totalRows_lastTime = mysql_num_rows($lastTime);
+$timeToCompare = strtotime($row_lastTime['last_time']);
+
+// Update Timestamp
+$query_UpdateLastTime = "update  usr_mgmnt set last_time=now() WHERE userid='$colname_rsUserId' AND status='$colname_rsStatus'";
+$UpdateLastTime = mysql_query($query_UpdateLastTime, $online_order) or die(mysql_error());
+
+$play = false;
+
 
 ?>
 <!DOCTYPE html>
@@ -157,8 +170,11 @@ $totalRows_completeOrder = mysql_num_rows($count_completeOrder);
 <head>
   <title>Online Order Updates</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="refresh" content="180" />
   <!-- Bootstrap -->
   <link href="css/bootstrap.min.css" rel="stylesheet" media="screen">
+    <script src="http://code.jquery.com/jquery-latest.js"></script>
+    <script src="js/bootstrap.min.js"></script>
 
   <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!--[if lt IE 9]>
@@ -202,15 +218,32 @@ $totalRows_completeOrder = mysql_num_rows($count_completeOrder);
                 <th>Payment Type</th>
 
               </tr>
-              <?php do { ?>
-  <tr>
-      <td>
+               <?php do { ?>
+
+               <?php
+              $new = false;
+                if (strtotime($row_rsViewOrder['order_time']) > $timeToCompare) {
+                  $new = true;
+                  $play = true;
+                }
+                ?>
+              <tr <?php if($new) echo "class=\"alert alert-success\"" ?> >
+<td>
       <a href="orderDetails.php?url_mainorder_id=<?php echo $row_rsViewOrder['mainorder_id']; ?>&url_user_id=<?php echo $row_rsViewOrder['userid']; ?>&url_status_id=<?php echo $row_rsViewOrder['status']; ?>">
         <button class="btn btn-reset" type="button"><?php echo $row_rsViewOrder['mainorder_id']; ?></button>
       </a> 
+                      <br><br>
+                <?php
+                 if($new){
+                  echo "<button class=\"btn btn-success\" type=\"button\">New Order</button>"; 
+                }
+                ?> 
     </td>
 
-    <td><?php echo $row_rsViewOrder['order_time']; ?></td>
+                <td>
+                <?php echo $row_rsViewOrder['order_date'] . "<br>"; ?>
+               <strong> <?php echo substr($row_rsViewOrder['order_time'],11,5); ?></strong>
+                </td>
 
                     <!-- Customer Details -->
                 <td>
@@ -245,15 +278,49 @@ $totalRows_completeOrder = mysql_num_rows($count_completeOrder);
     <td><?php echo $row_rsViewOrder['payment_mode']; ?></td>
 
   </tr>
-  <?php } while ($row_rsViewOrder = mysql_fetch_assoc($rsViewOrder)); ?>
+  <?php } while ($row_rsViewOrder = mysql_fetch_assoc($rsViewOrder)); 
+
+  ?>
               
 
               </table>
+
+
+                            <?php if($play) { ?>
+           <audio autoplay>
+  <source src="notification.mp3" type="audio/mpeg">
+</audio>
+<?php } ?>
+              <?php if($play) { ?>
+           <audio autoplay>
+  <source src="notification.mp3" type="audio/mpeg">
+</audio>
+<?php } ?>
+
+<!-- <button type="button" data-toggle="modal" data-target="#myModal">Launch modal</button> -->
+<div class="modal hide fade" id="myModal" data-target="#foo">
+  <div class="modal-header" >
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+    <h3>Notification</h3>
+  </div>
+  <div class="modal-body">
+    <p>You have New Orders.</p>
+  </div>
+  <div class="modal-footer">
+    <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+  </div>
+</div>
            
           </div>
         </div> 
       </div>
 
+
+<script>
+ <?php if($play) { 
+echo "$('#myModal').modal('show')";
+ } ?>
+</script>
     </body>
     </html>
 <?php

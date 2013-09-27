@@ -235,6 +235,16 @@ $row_rsPizzaDetails = mysql_fetch_assoc($rsPizzaDetails);
              <strong> Payment Mode :</strong>
                <?php echo $row_rsUserInfo['payment_mode']; ?>
             </div>
+
+            <div class="span4">
+             <strong> Dine in Time : </strong>
+              <?php echo $row_rsUserInfo['dlinedate']; ?> 
+              <br>
+              <?php echo $row_rsUserInfo['dlinetime']; ?> 
+
+            </div>
+
+
           </div>
           <br>
 
@@ -248,7 +258,12 @@ $row_rsPizzaDetails = mysql_fetch_assoc($rsPizzaDetails);
               <th>Item Price</th>
               <th>Total</th>
             </tr>
-            <?php $i = 1; do { ?>
+            <?php 
+            $i = 1; do { 
+              if ($row_rsOrderDetails['item_name']=='pizza') {
+                continue;
+              }
+              ?>
   <tr>
     <td><?php echo $i++; ?></td>
     <td><?php echo $row_rsOrderDetails['item_name']; ?></td>
