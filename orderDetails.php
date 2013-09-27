@@ -142,7 +142,7 @@ $totalRows_rsOrderDetails = mysql_num_rows($rsOrderDetails);
 
 if (isset($_GET['orderStatus'])) {
   $orderStatus = $_GET['orderStatus'];
-$updateSQL = sprintf("UPDATE order_updt_status SET update_status= '%s' WHERE status = '%s' AND userid = %s AND mainorder_id = %s",$orderStatus,$colname_Status,GetSQLValueString($colname_rsUserInfo, "int"),GetSQLValueString($colname_rsOrderDetails, "int"));
+$updateSQL = sprintf("UPDATE order_updt_status SET update_status= %s WHERE status = '%s' AND userid = %s AND mainorder_id = %s",$orderStatus,$colname_Status,GetSQLValueString($colname_rsUserInfo, "int"),GetSQLValueString($colname_rsOrderDetails, "int"));
 
 $Result1 = mysql_query($updateSQL, $online_order) or die(mysql_error());
 
@@ -157,9 +157,9 @@ $update_status = $row_orderStatus['update_status'];
 
 
 // New , Pending , Complete Order Count Details
-$query_newOrder = sprintf("SELECT * FROM order_updt_status WHERE update_status = 'New' AND status='$colname_Status' AND userid = %s",GetSQLValueString($colname_rsUserInfo, "int") );
-$query_pendingOrder = sprintf("SELECT * FROM order_updt_status WHERE update_status = 'Pending' AND status='$colname_Status' AND userid = %s",GetSQLValueString($colname_rsUserInfo, "int") );
-$query_completeOrder = sprintf("SELECT * FROM order_updt_status WHERE update_status = 'Complete' AND status='$colname_Status' AND userid = %s",GetSQLValueString($colname_rsUserInfo, "int") );
+$query_newOrder = sprintf("SELECT * FROM order_updt_status WHERE update_status = 1 AND status='$colname_Status' AND userid = %s",GetSQLValueString($colname_rsUserInfo, "int") );
+$query_pendingOrder = sprintf("SELECT * FROM order_updt_status WHERE update_status = 2 AND status='$colname_Status' AND userid = %s",GetSQLValueString($colname_rsUserInfo, "int") );
+$query_completeOrder = sprintf("SELECT * FROM order_updt_status WHERE update_status = 3 AND status='$colname_Status' AND userid = %s",GetSQLValueString($colname_rsUserInfo, "int") );
 $count_newOrder = mysql_query($query_newOrder, $online_order) or die(mysql_error());
 $count_pendingOrder = mysql_query($query_pendingOrder, $online_order) or die(mysql_error());
 $count_completeOrder = mysql_query($query_completeOrder, $online_order) or die(mysql_error());
@@ -236,6 +236,14 @@ $row_rsPizzaDetails = mysql_fetch_assoc($rsPizzaDetails);
              <strong> Payment Mode :</strong>
                <?php echo $row_rsUserInfo['payment_mode']; ?>
             </div>
+
+            <div class="span4">
+             <strong> Dine in Time : </strong>
+              <?php echo $row_rsUserInfo['dlinedate']; ?> 
+              <br>
+              <?php echo $row_rsUserInfo['dlinetime']; ?> 
+
+            </div>
           </div>
 
           <br>
@@ -250,7 +258,12 @@ $row_rsPizzaDetails = mysql_fetch_assoc($rsPizzaDetails);
               <th>Item Price</th>
               <th>Total</th>
             </tr>
-            <?php $i = 1; do { ?>
+            <?php 
+            $i = 1; do { 
+              if ($row_rsOrderDetails['item_name']=='pizza') {
+                continue;
+              }
+              ?>
   <tr>
     <td><?php echo $i++; ?></td>
     <td>
@@ -332,9 +345,9 @@ $row_rsPizzaDetails = mysql_fetch_assoc($rsPizzaDetails);
 <fieldset>
   <label class="control-label"><strong>Order Status : </strong></label>
     <select id="orderStatus" name="orderStatus" class="input-xlarge">
-      <option value="New" <?php if($update_status == 'New') echo "selected"; ?>>New</option>
-      <option value="Pending" <?php if($update_status == 'Pending') echo "selected"; ?>>Pending</option>
-      <option value="Complete" <?php if($update_status == 'Complete') echo "selected"; ?>>Complete</option>
+      <option value="1" <?php if($update_status == 1) echo "selected"; ?>>New</option>
+      <option value="2" <?php if($update_status == 2) echo "selected"; ?>>Pending</option>
+      <option value="3" <?php if($update_status == 3) echo "selected"; ?>>Complete</option>
     </select>
 <input type="hidden" name="url_mainorder_id" value="<?php echo $colname_rsOrderDetails; ?>">
 <input type="hidden" name="url_user_id" value="<?php echo $colname_rsUserInfo; ?>">
