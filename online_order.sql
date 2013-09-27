@@ -139,7 +139,8 @@ CREATE TABLE IF NOT EXISTS `order_updt_status` (
 
 INSERT INTO `order_updt_status` (`username`,`userid` ,`status`, `update_status`, `mainorder_id`) VALUES
 ('admin',11, '1', 'New', NULL),
-('root',11, '3', 'Pending', 1827364),
+('root',11, '3', 'Pending', 1613984),
+('user',11, '2', 'New', 1827364),
 ('user',11, '2', 'Complete', 2748359);
 
 -- --------------------------------------------------------

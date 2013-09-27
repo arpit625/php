@@ -130,7 +130,7 @@ $totalRows_rsUserInfo = mysql_num_rows($rsUserInfo);
 
 mysql_select_db($database_online_order, $online_order);
 // $query_rsOrderDetails = sprintf("SELECT temp_order_id, extra_price, price, item_name, extra_items_name,selected_options_name FROM cart_order_items WHERE order_id = %s", GetSQLValueString($colname_rsOrderDetails, "int"));
-$query_rsOrderDetails = sprintf("SELECT * FROM cart_order_items WHERE order_id = %s", GetSQLValueString($colname_rsOrderDetails, "int"));
+$query_rsOrderDetails = sprintf("SELECT * FROM cart_order_items WHERE order_id = %s and pizzaname = '' or pizzaname is null", GetSQLValueString($colname_rsOrderDetails, "int"));
 $rsOrderDetails = mysql_query($query_rsOrderDetails, $online_order) or die(mysql_error());
 $row_rsOrderDetails = mysql_fetch_assoc($rsOrderDetails);
 $totalRows_rsOrderDetails = mysql_num_rows($rsOrderDetails);
@@ -170,7 +170,7 @@ $totalRows_completeOrder = mysql_num_rows($count_completeOrder);
 
 // Pizza Info
 
-$query_rsPizzaDetails = sprintf("SELECT * FROM cart_order_items WHERE order_id = %s AND item_name='pizza'", $colname_rsOrderDetails);
+$query_rsPizzaDetails = sprintf("SELECT * FROM cart_order_items WHERE order_id = %s AND pizzaname <> '' and pizzaname is not null", $colname_rsOrderDetails);
 $rsPizzaDetails = mysql_query($query_rsPizzaDetails, $online_order) or die(mysql_error());
 $row_rsPizzaDetails = mysql_fetch_assoc($rsPizzaDetails);
 ?>
@@ -236,14 +236,15 @@ $row_rsPizzaDetails = mysql_fetch_assoc($rsPizzaDetails);
              <strong> Payment Mode :</strong>
                <?php echo $row_rsUserInfo['payment_mode']; ?>
             </div>
-
+			 <?php if($row_rsUserInfo['status_dineup'] == "yes")
+				{ ?>
             <div class="span4">
              <strong> Dine in Time : </strong>
               <?php echo $row_rsUserInfo['dlinedate']; ?> 
-              <br>
               <?php echo $row_rsUserInfo['dlinetime']; ?> 
 
             </div>
+			<?php } ?>
           </div>
 
           <br>
@@ -258,12 +259,7 @@ $row_rsPizzaDetails = mysql_fetch_assoc($rsPizzaDetails);
               <th>Item Price</th>
               <th>Total</th>
             </tr>
-            <?php 
-            $i = 1; do { 
-              if ($row_rsOrderDetails['item_name']=='pizza') {
-                continue;
-              }
-              ?>
+            <?php $i = 1; do { ?>
   <tr>
     <td><?php echo $i++; ?></td>
     <td>
@@ -310,9 +306,9 @@ $row_rsPizzaDetails = mysql_fetch_assoc($rsPizzaDetails);
             </table>
 
 <div class="row-fluid">
-<div class="span8"
+<div class="span8">
           <br>
-          <h2>Customer Details</h2>
+          <h4>Customer Details</h4>
           <div class="row-fluid">
             <div class="span6">
             <dl class="dl-horizontal">
